@@ -63,8 +63,14 @@ func (ad s3adapter) PutString(filename string, text string) (interface{}, error)
 	return r, err
 }
 
-func (ad s3adapter) Delete() {
+func (ad s3adapter) Delete(filename string) error {
+	input := &s3.DeleteObjectInput{
+		Bucket: aws.String(ad.Config.Bucket),
+		Key:    aws.String(filename),
+	}
 
+	_, err := ad.Service.DeleteObject(input)
+	return err
 }
 
 func (ad s3adapter) GetSignedUrl(filename string, ttl time.Duration) (string, error) {
