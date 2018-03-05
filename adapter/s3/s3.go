@@ -42,10 +42,7 @@ func NewS3Adapter(c S3config) adapter.Filesystem {
 }
 
 func (ad s3adapter) GetString(filename string) (string, error) {
-	input := &s3.GetObjectInput{
-		Bucket: aws.String(ad.Config.Bucket),
-		Key:    aws.String(filename),
-	}
+	input := ad.getObjectInput(filename)
 	r, err := ad.Service.GetObject(input)
 	if err != nil { return "", err}
 	text, err := ioutil.ReadAll(r.Body)
@@ -74,10 +71,22 @@ func (ad s3adapter) Delete(filename string) error {
 }
 
 func (ad s3adapter) GetSignedUrl(filename string, ttl time.Duration) (string, error) {
-	req, _ := ad.Service.GetObjectRequest(&s3.GetObjectInput{
+	req, _ := ad.Service.GetObjectRequest(ad.getObjectInput(filename))
+	return req.Presign(ttl)
+}
+
+func (ad s3adapter) getObjectInput(filename string) *s3.GetObjectInput {
+	return &s3.GetObjectInput{
 		Bucket: aws.String(ad.Config.Bucket),
 		Key:    aws.String(filename),
-	})
+	}
+}
 
-	return req.Presign(ttl)
+func (ad s3adapter) Exist(filename string) bool  {
+	_, err := ad.Service.GetObject(ad.getObjectInput(filename))
+	return err == nil
+}
+
+func (ad s3adapter) Info(filename string)  {
+
 }

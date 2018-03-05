@@ -2,7 +2,6 @@ package gost
 
 import (
 	"testing"
-	"fmt"
 	"time"
 )
 
@@ -27,6 +26,13 @@ func Test_GetSignedUrl(t *testing.T) {
 	}
 }
 
+
+func Test_Exist(t *testing.T)  {
+	if ! New().Exist("test.txt") {
+		t.Errorf("File doesn't exist")
+	}
+}
+
 func Test_Delete(t *testing.T) {
 	err := New().Delete("test.txt")
 	if err != nil {
@@ -35,5 +41,11 @@ func Test_Delete(t *testing.T) {
 	_, err = New().GetString("test.txt")
 	if err == nil {
 		t.Errorf("File was not deleted in the bucket")
+	}
+}
+
+func Test_NotExist(t *testing.T)  {
+	if New().Exist("test.txt") {
+		t.Errorf("File does exist")
 	}
 }

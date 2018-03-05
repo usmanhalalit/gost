@@ -7,4 +7,6 @@ type Filesystem interface {
 	Delete(filename string) error
 	PutString(filename string, text string) (interface{}, error)
 	GetSignedUrl(filename string, ttl time.Duration) (string, error)
+	Exist(filename string) bool
+	Info(filename string)
 }
