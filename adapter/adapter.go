@@ -2,12 +2,30 @@ package adapter
 
 import "time"
 
+
 type Filesystem interface {
-	GetString(filename string) (string, error)
-	Delete(filename string) error
-	PutString(filename string, text string) (interface{}, error)
-	Exist(filename string) bool
-	Info(filename string) (FileInfo, error)
+	Directory
+	GetClient() interface{}
+	GetConfig() interface{}
+}
+
+type Directory interface {
+	File(path string) File
+	Files() ([]File, error)
+	//Directory() *Directory
+	//Directories() ([]Directory, error)
+	//Info()
+}
+
+type File interface {
+	//Get() ([]byte, error)
+	GetString() (string, error)
+	//Put(text []byte) (interface{}, error)
+	PutString(text string) (interface{}, error)
+	Delete() error
+	Exist() bool
+	Info() (FileInfo, error)
+	//Directory() *Directory
 }
 
 type FileInfo struct {
