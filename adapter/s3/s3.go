@@ -8,22 +8,24 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"bytes"
 	"io/ioutil"
+	"strings"
 	"time"
 )
 
-type S3adapter struct{
+type S3filesystem struct{
+	S3directory
 	Service *s3.S3
 	Config S3config
 }
 
 type S3file struct {
 	Path string
-	Filesystem *S3adapter
+	Filesystem *S3filesystem
 }
 
 type S3directory struct {
 	Path string
-	Filesystem *S3adapter
+	Filesystem *S3filesystem
 }
 
 type S3config struct {
@@ -35,7 +37,7 @@ type S3config struct {
 }
 var s3Service *s3.S3
 
-func NewS3Adapter(c S3config) adapter.Filesystem {
+func NewS3Adapter(c S3config) adapter.Directory {
 	sess, _ := session.NewSession(&aws.Config{
 		Region: aws.String(c.Region),
 		Credentials: credentials.NewStaticCredentials(c.Id, c.Secret, c.Token),
@@ -45,38 +47,51 @@ func NewS3Adapter(c S3config) adapter.Filesystem {
 	// Create S3 service client with a specific Region.
 	s3Service = s3.New(sess)
 
-	return S3adapter{
+	fs := S3filesystem{
 		Service: s3Service,
 		Config: c,
 	}
-}
-
-func (ad S3adapter) GetClient() interface{} {
-	return ad.Service
-}
-
-func (ad S3adapter) GetConfig() interface{} {
-	return ad.Config
-}
-
-func (ad S3adapter) File(path string) adapter.File {
-	return &S3file{
-		Path: path,
-		Filesystem: &ad,
+	return S3directory{
+		Filesystem: &fs,
+		Path: "",
 	}
 }
 
-func (ad S3adapter) Files() ([]adapter.File, error) {
-	files, err := ad.Service.ListObjects(&s3.ListObjectsInput{
-		Bucket: aws.String(ad.Config.Bucket),
-		Prefix: aws.String(""),
+func (ad S3directory) GetClient() interface{} {
+	return ad.Filesystem.Service
+}
+
+func (ad S3directory) GetConfig() interface{} {
+	return ad.Filesystem.Config
+}
+
+func (ad S3directory) File(path string) adapter.File {
+	return &S3file{
+		Path: path,
+		Filesystem: ad.Filesystem,
+	}
+}
+
+func (ad S3directory) Directory(path string) adapter.Directory {
+	path = ad.Path + "/" + path
+	path = strings.Trim(path, "/")
+	return S3directory{
+		Path: path,
+		Filesystem: ad.Filesystem,
+	}
+}
+
+func (ad S3directory) Files() ([]adapter.File, error) {
+	files, err := ad.Filesystem.Service.ListObjects(&s3.ListObjectsInput{
+		Bucket: aws.String(ad.Filesystem.Config.Bucket),
+		Prefix: aws.String(ad.Path),
 	})
 	if err != nil { return nil, err }
 	var s3files []adapter.File
 	for i := range files.Contents {
 		s3file := S3file{
 			Path: *files.Contents[i].Key,
-			Filesystem: &ad,
+			Filesystem: ad.Filesystem,
 		}
 		s3files = append(s3files, adapter.File(s3file))
 	}
@@ -84,7 +99,7 @@ func (ad S3adapter) Files() ([]adapter.File, error) {
 }
 
 //func (ad S3file) Directory() *adapter.Directory {
-//	return S3adapter{}
+//	return S3filesystem{}
 //}
 
 func (f S3file) GetString() (string, error) {

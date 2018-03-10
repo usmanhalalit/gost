@@ -4,15 +4,15 @@ import "time"
 
 
 type Filesystem interface {
-	Directory
 	GetClient() interface{}
 	GetConfig() interface{}
 }
 
 type Directory interface {
+	Filesystem
 	File(path string) File
 	Files() ([]File, error)
-	//Directory() *Directory
+	Directory(path string) Directory
 	//Directories() ([]Directory, error)
 	//Info()
 }

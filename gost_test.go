@@ -8,7 +8,7 @@ import (
 func Test_New(t *testing.T) {
 	fs := New()
 	//_, err := fs.File("test.txt").PutString("abc")
-	files, err := fs.Files()
+	files, err := fs.Directory("aDir").Files()
 	fmt.Println(files)
 	fmt.Println(files[0].GetString())
 	if err != nil {
@@ -41,7 +41,7 @@ func Test_New(t *testing.T) {
 //
 //func Test_GetSignedUrl(t *testing.T) {
 //	ad := New()
-//	_, err := ad.(s3.S3adapter).GetSignedUrl("test.txt", time.Minute * 1)
+//	_, err := ad.(s3.S3filesystem).GetSignedUrl("test.txt", time.Minute * 1)
 //	if err != nil {
 //		t.Errorf("Failed write: %v", err)
 //	}
