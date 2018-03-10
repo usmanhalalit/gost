@@ -67,9 +67,18 @@ func (ad S3adapter) File(path string) adapter.File {
 }
 
 func (ad S3adapter) Files() ([]adapter.File, error) {
-	var s3files []S3file
-	for i := 0; i < 10; i++ {
-		s3files = append(s3files, S3file{})
+	files, err := ad.Service.ListObjects(&s3.ListObjectsInput{
+		Bucket: aws.String(ad.Config.Bucket),
+		Prefix: aws.String(""),
+	})
+	if err != nil { return nil, err }
+	var s3files []adapter.File
+	for i := range files.Contents {
+		s3file := S3file{
+			Path: *files.Contents[i].Key,
+			Filesystem: &ad,
+		}
+		s3files = append(s3files, adapter.File(s3file))
 	}
 	return s3files, nil
 }

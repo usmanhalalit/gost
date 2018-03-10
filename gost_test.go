@@ -7,7 +7,10 @@ import (
 
 func Test_New(t *testing.T) {
 	fs := New()
-	_, err := fs.File("test.txt").PutString("abc")
+	//_, err := fs.File("test.txt").PutString("abc")
+	files, err := fs.Files()
+	fmt.Println(files)
+	fmt.Println(files[0].GetString())
 	if err != nil {
 		t.Errorf("Failed write: %v", err)
 	}
