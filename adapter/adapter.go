@@ -9,10 +9,10 @@ type Filesystem interface {
 }
 
 type Directory interface {
-	Filesystem
 	File(path string) File
 	Files() ([]File, error)
 	Directory(path string) Directory
+	Filesystem() Filesystem
 	//Directories() ([]Directory, error)
 	//Info()
 }
@@ -26,6 +26,7 @@ type File interface {
 	Exist() bool
 	Info() (FileInfo, error)
 	//Directory() *Directory
+	Filesystem() Filesystem
 }
 
 type FileInfo struct {
