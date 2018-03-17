@@ -2,24 +2,97 @@ package gost
 
 import (
 	"fmt"
+	"github.com/usmanhalalit/gost/adapter/s3"
+	"io/ioutil"
+	"os"
 	"testing"
 )
 
-func Test_New(t *testing.T) {
+//func Test_New(t *testing.T) {
+//	fs := New()
+//	//_, err := fs.File("test.txt").PutString("abc")
+//	files, err := fs.Directory("aDir").Files()
+//	fmt.Println(files)
+//	fmt.Println(files[0].GetString())
+//	if err != nil {
+//		t.Errorf("Failed write: %v", err)
+//	}
+//
+//	txt, err := fs.File("test.txt").GetString()
+//	if err != nil {
+//		t.Errorf("Failed read: %v", err)
+//	}
+//	fmt.Printf(txt)
+//}
+
+func Test_Write(t *testing.T) {
 	fs := New()
-	//_, err := fs.File("test.txt").PutString("abc")
-	files, err := fs.Directory("aDir").Files()
-	fmt.Println(files)
-	fmt.Println(files[0].GetString())
+	f := fs.File("firas.jpg")
+	//n, err := fmt.Fprintf(f, "A formatted \na\na %v", "string")
+	firas, err := os.Open("firas.jpg")
 	if err != nil {
-		t.Errorf("Failed write: %v", err)
+		t.Fatal(err)
+	}
+	fi, _ := firas.Stat()
+	size := int(fi.Size())
+	firasB := make([]byte, size)
+	r, err := firas.Read(firasB)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Printf("Read %v bytes\n", r)
+	fmt.Printf("Writing\n")
+	n, err := f.Write(firasB)
+
+	if n != size {
+		t.Errorf("Failed writing as io.Writer wrote %v bytes found %v bytes", n, size)
 	}
 
-	txt, err := fs.File("test.txt").GetString()
 	if err != nil {
-		t.Errorf("Failed read: %v", err)
+		t.Fatal(err)
 	}
-	fmt.Printf(txt)
+}
+
+
+func Test_Read(t *testing.T) {
+	fs := New()
+	f := fs.File("firas.jpg").(*s3.S3file)
+
+	//r, err := f.ReadShit()
+	firasB, err := ioutil.ReadAll(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	firas, err := os.Create("firas_downloaded.jpg")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	firas.Write(firasB)
+	firas.Close()
+	//
+	//fB := make([]byte, size)
+	//r, err := f.Read(fB)
+	//if err != nil {
+	//	t.Fatal(err)
+	//}
+	//fmt.Printf("Read %v bytes\n", r)
+	//if err != nil {
+	//	t.Fatal(err)
+	//}
+	//
+	//fmt.Printf("Writing\n")
+	//n, err := firas.Write(fB)
+	//
+	//
+	//if n != size {
+	//	t.Errorf("Failed writing as io.Writer wrote %v bytes found %v bytes", n, size)
+	//}
+	//
+	//if err != nil {
+	//	t.Fatal(err)
+	//}
 }
 
 //

@@ -1,13 +1,15 @@
 package s3
 
 import (
-	"github.com/usmanhalalit/gost/adapter"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"bytes"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/usmanhalalit/gost/adapter"
+	"io"
 	"io/ioutil"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -18,8 +20,10 @@ type S3filesystem struct{
 }
 
 type S3file struct {
-	Path string
-	Fs *S3filesystem
+	Path   string
+	Fs     *S3filesystem
+	reader io.Reader
+	writer io.WriteCloser
 }
 
 type S3directory struct {
@@ -70,9 +74,14 @@ func (ad S3directory) Filesystem() adapter.Filesystem {
 
 func (ad S3directory) File(path string) adapter.File {
 	return &S3file{
-		Path: path,
-		Fs: ad.Fs,
+		Path:   path,
+		Fs:     ad.Fs,
+		reader: nil,
 	}
+}
+
+func (ad S3directory) GetPath() string {
+	return ad.Path
 }
 
 func (ad S3directory) Directory(path string) adapter.Directory {
@@ -95,18 +104,26 @@ func (ad S3directory) Files() ([]adapter.File, error) {
 		s3file := S3file{
 			Path: *files.Contents[i].Key,
 			Fs: ad.Fs,
+			reader: nil,
 		}
-		s3files = append(s3files, adapter.File(s3file))
+		s3files = append(s3files, adapter.File(&s3file))
 	}
 	return s3files, nil
 }
 
-//func (ad S3file) Directory() *adapter.Directory {
-//	return S3filesystem{}
-//}
+func (f S3file) Directory() adapter.Directory {
+	return S3directory{
+		Path: filepath.Dir(f.GetPath()),
+		Fs: f.Fs,
+	}
+}
 
 func (f S3file) Filesystem() adapter.Filesystem {
 	return f.Fs
+}
+
+func (f S3file) GetPath() string {
+	return f.Path
 }
 
 func (f S3file) GetString() (string, error) {
@@ -155,6 +172,37 @@ func (f S3file) Info() (adapter.FileInfo, error) {
 	info.LastModified = *file.LastModified
 
 	return info, nil
+}
+
+func (f S3file) Write(p []byte) (n int, err error) {
+	reader := bytes.NewReader(p)
+	input := &s3.PutObjectInput{
+		Body:   reader,
+		Bucket: aws.String(f.Fs.Config.Bucket),
+		Key:    aws.String(f.Path),
+	}
+	_, err = f.Fs.Service.PutObject(input)
+	bytesWritten := len(p) - reader.Len()
+	// TODO follow rules on io.Writer
+	return bytesWritten, err
+}
+
+func (f *S3file) Read(p []byte) (n int, err error) {
+	if f.reader == nil {
+		input := f.getObjectInput()
+		r, err := f.Fs.Service.GetObject(input)
+		if err != nil { return 0, err }
+		f.reader = r.Body
+	}
+
+	return f.reader.Read(p)
+}
+
+func (f S3file) ReadShit() (n io.Reader, err error) {
+	input := f.getObjectInput()
+	r, err := f.Fs.Service.GetObject(input)
+	if err != nil { return nil, err}
+	return  r.Body, nil
 }
 
 func (f S3file) GetSignedUrl(ttl time.Duration) (string, error) {

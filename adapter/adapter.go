@@ -1,6 +1,9 @@
 package adapter
 
-import "time"
+import (
+	"io"
+	"time"
+)
 
 
 type Filesystem interface {
@@ -13,6 +16,7 @@ type Directory interface {
 	Files() ([]File, error)
 	Directory(path string) Directory
 	Filesystem() Filesystem
+	GetPath() string
 	//Directories() ([]Directory, error)
 	//Info()
 }
@@ -25,8 +29,10 @@ type File interface {
 	Delete() error
 	Exist() bool
 	Info() (FileInfo, error)
-	//Directory() *Directory
+	Directory() Directory
+	GetPath() string
 	Filesystem() Filesystem
+	io.ReadWriter
 }
 
 type FileInfo struct {
