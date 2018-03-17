@@ -22,10 +22,8 @@ type Directory interface {
 }
 
 type File interface {
-	//Get() ([]byte, error)
-	GetString() (string, error)
-	//Put(text []byte) (interface{}, error)
-	PutString(text string) (interface{}, error)
+	ReadString() (string, error)
+	WriteString(text string) error
 	Delete() error
 	Exist() bool
 	Info() (FileInfo, error)

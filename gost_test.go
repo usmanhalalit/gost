@@ -10,15 +10,15 @@ import (
 
 func Test_New(t *testing.T) {
 	fs := New()
-	//_, err := fs.File("test.txt").PutString("abc")
+	//_, err := fs.File("test.txt").WriteString("abc")
 	files, err := fs.Directory("aDir").Files()
 	fmt.Println(files)
-	fmt.Println(files[0].GetString())
+	fmt.Println(files[0].ReadString())
 	if err != nil {
 		t.Errorf("Failed write: %v", err)
 	}
 
-	txt, err := fs.File("test.txt").GetString()
+	txt, err := fs.File("test.txt").ReadString()
 	if err != nil {
 		t.Errorf("Failed read: %v", err)
 	}
@@ -74,18 +74,9 @@ func Test_Read(t *testing.T) {
 	//
 }
 
-//
-//func Test_NewIdea(t *testing.T) {
-//	disc := New()
-//	file := disc.File("test.txt")
-//	_, err := file.PutString("abc")
-//	if err != nil {
-//		t.Errorf("Failed write: %v", err)
-//	}
-//}
-//
+
 //func Test_GetString(t *testing.T) {
-//	_, err := New().GetString("test.txt")
+//	_, err := New().ReadString("test.txt")
 //	if err != nil {
 //		t.Errorf("Failed write: %v", err)
 //	}
@@ -126,7 +117,7 @@ func Test_Read(t *testing.T) {
 //	if err != nil {
 //		t.Errorf("Failed write: %v", err)
 //	}
-//	_, err = New().GetString("test.txt")
+//	_, err = New().ReadString("test.txt")
 //	if err == nil {
 //		t.Errorf("File was not deleted in the bucket")
 //	}

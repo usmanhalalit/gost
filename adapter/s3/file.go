@@ -2,6 +2,8 @@ package s3
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/usmanhalalit/gost/adapter"
@@ -33,23 +35,18 @@ func (f *S3file) GetPath() string {
 	return f.Path
 }
 
-func (f *S3file) GetString() (string, error) {
-	input := f.getObjectInput()
-	r, err := f.Fs.Service.GetObject(input)
-	if err != nil { return "", err}
-	text, err := ioutil.ReadAll(r.Body)
-	return string(text), err
+func (f *S3file) ReadString() (string, error) {
+	b, err := ioutil.ReadAll(f)
+	return string(b), err
 }
 
-func (f *S3file) PutString(text string) (interface{}, error) {
-	input := &s3.PutObjectInput{
-		Body:   bytes.NewReader([]byte(text)),
-		Bucket: aws.String(f.Fs.Config.Bucket),
-		Key:    aws.String(f.Path),
+func (f *S3file) WriteString(s string) error {
+	b := []byte(s)
+	n, err := f.Write(b)
+	if n != len(b) {
+		return errors.New(fmt.Sprintf("Wrote %v bytes from given %v bytes", n, len(b)))
 	}
-
-	r, err := f.Fs.Service.PutObject(input)
-	return r, err
+	return err
 }
 
 func (f *S3file) Delete() error {
