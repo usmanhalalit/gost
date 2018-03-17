@@ -8,22 +8,22 @@ import (
 	"testing"
 )
 
-//func Test_New(t *testing.T) {
-//	fs := New()
-//	//_, err := fs.File("test.txt").PutString("abc")
-//	files, err := fs.Directory("aDir").Files()
-//	fmt.Println(files)
-//	fmt.Println(files[0].GetString())
-//	if err != nil {
-//		t.Errorf("Failed write: %v", err)
-//	}
-//
-//	txt, err := fs.File("test.txt").GetString()
-//	if err != nil {
-//		t.Errorf("Failed read: %v", err)
-//	}
-//	fmt.Printf(txt)
-//}
+func Test_New(t *testing.T) {
+	fs := New()
+	//_, err := fs.File("test.txt").PutString("abc")
+	files, err := fs.Directory("aDir").Files()
+	fmt.Println(files)
+	fmt.Println(files[0].GetString())
+	if err != nil {
+		t.Errorf("Failed write: %v", err)
+	}
+
+	txt, err := fs.File("test.txt").GetString()
+	if err != nil {
+		t.Errorf("Failed read: %v", err)
+	}
+	fmt.Printf(txt)
+}
 
 func Test_Write(t *testing.T) {
 	fs := New()
@@ -72,27 +72,6 @@ func Test_Read(t *testing.T) {
 	firas.Write(firasB)
 	firas.Close()
 	//
-	//fB := make([]byte, size)
-	//r, err := f.Read(fB)
-	//if err != nil {
-	//	t.Fatal(err)
-	//}
-	//fmt.Printf("Read %v bytes\n", r)
-	//if err != nil {
-	//	t.Fatal(err)
-	//}
-	//
-	//fmt.Printf("Writing\n")
-	//n, err := firas.Write(fB)
-	//
-	//
-	//if n != size {
-	//	t.Errorf("Failed writing as io.Writer wrote %v bytes found %v bytes", n, size)
-	//}
-	//
-	//if err != nil {
-	//	t.Fatal(err)
-	//}
 }
 
 //
