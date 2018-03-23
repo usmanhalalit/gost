@@ -9,7 +9,7 @@ import (
 )
 
 var ep, _ = os.Getwd()
-var lfs = local.NewLocalAdapter(local.LocalConfig{
+var lfs = local.New(local.Config{
 	BasePath: ep + "/storage",
 })
 

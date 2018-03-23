@@ -1,7 +1,6 @@
 package gost
 
 import (
-	"fmt"
 	"github.com/usmanhalalit/gost/adapter/s3"
 	"io/ioutil"
 	"os"
@@ -9,10 +8,10 @@ import (
 	"time"
 )
 
-var fs = New()
+var s3fs = New()
 
 func Test_New(t *testing.T) {
-	files, err := fs.Directory("aDir").Files()
+	files, err := s3fs.Directory("aDir").Files()
 
 	if len(files) < 1 {
 		t.Errorf("Failed listing found %v files", len(files))
@@ -22,28 +21,26 @@ func Test_New(t *testing.T) {
 		t.Errorf("Failed listing: %v", err)
 	}
 
-	err = fs.File("test.txt").WriteString("abc")
+	err = s3fs.File("test.txt").WriteString("abc")
 	if err != nil {
 		t.Errorf("Failed write: %v", err)
 	}
 }
 
 func Test_Write(t *testing.T) {
-	f := fs.File("firas.jpg")
+	f := s3fs.File("firas.jpg")
 	//n, err := fmt.Fprintf(f, "A formatted \na\na %v", "string")
-	firas, err := os.Open("firas.jpg")
+	firas, err := os.Open("storage/firas.jpg")
 	if err != nil {
 		t.Fatal(err)
 	}
 	fi, _ := firas.Stat()
 	size := int(fi.Size())
 	firasB := make([]byte, size)
-	r, err := firas.Read(firasB)
+	_, err = firas.Read(firasB)
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Printf("Read %v bytes\n", r)
-	fmt.Printf("Writing\n")
 	n, err := f.Write(firasB)
 
 	if n != size {
@@ -57,7 +54,7 @@ func Test_Write(t *testing.T) {
 
 
 func Test_Read(t *testing.T) {
-	f := fs.File("firas.jpg").(*s3.S3file)
+	f := s3fs.File("firas.jpg").(*s3.S3file)
 
 	//r, err := f.ReadShit()
 	firasB, err := ioutil.ReadAll(f)
@@ -65,7 +62,7 @@ func Test_Read(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	firas, err := os.Create("firas_downloaded.jpg")
+	firas, err := os.Create("storage/firas_downloaded.jpg")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -77,14 +74,14 @@ func Test_Read(t *testing.T) {
 
 
 func Test_GetString(t *testing.T) {
-	_, err := fs.File("test.txt").ReadString()
+	_, err := s3fs.File("test.txt").ReadString()
 	if err != nil {
 		t.Errorf("Failed write: %v", err)
 	}
 }
 
 func Test_GetSignedUrl(t *testing.T) {
-	f := fs.File("test.txt")
+	f := s3fs.File("test.txt")
 	_, err := f.(*s3.S3file).GetSignedUrl(time.Minute * 1)
 	if err != nil {
 		t.Errorf("Failed write: %v", err)
@@ -92,13 +89,13 @@ func Test_GetSignedUrl(t *testing.T) {
 }
 
 func Test_Exist(t *testing.T)  {
-	if ! fs.File("test.txt").Exist() {
+	if ! s3fs.File("test.txt").Exist() {
 		t.Errorf("File doesn't exist")
 	}
 }
 
 func Test_Stat(t *testing.T)  {
-	info, err := fs.File("test.txt").Stat()
+	info, err := s3fs.File("test.txt").Stat()
 	if err != nil {
 		t.Errorf("Couldn't get info: %v", err)
 	}
@@ -113,7 +110,7 @@ func Test_Stat(t *testing.T)  {
 }
 
 func Test_Delete(t *testing.T) {
-	err := fs.File("test.txt").Delete()
+	err := s3fs.File("test.txt").Delete()
 	if err != nil {
 		t.Errorf("Failed write: %v", err)
 	}
@@ -124,7 +121,7 @@ func Test_Delete(t *testing.T) {
 }
 
 func Test_NotExist(t *testing.T)  {
-	if fs.File("test.txt").Exist() {
+	if s3fs.File("test.txt").Exist() {
 		t.Errorf("File does exist")
 	}
 }

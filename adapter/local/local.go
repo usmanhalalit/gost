@@ -6,14 +6,14 @@ import (
 
 type LocalFilesystem struct {
 	Service interface{}
-	Config LocalConfig
+	Config  Config
 }
 
-type LocalConfig struct {
+type Config struct {
 	BasePath string
 }
 
-func NewLocalAdapter(c LocalConfig) adapter.Directory {
+func New(c Config) adapter.Directory {
 	fs := LocalFilesystem{
 		Service: nil,
 		Config: c,
