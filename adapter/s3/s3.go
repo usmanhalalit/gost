@@ -8,7 +8,7 @@ import (
 	"github.com/usmanhalalit/gost/adapter"
 )
 
-type S3filesystem struct{
+type S3filesystem struct {
 	Service *s3.S3
 	Config S3config
 }

@@ -13,11 +13,13 @@ type Filesystem interface {
 
 type Directory interface {
 	File(path string) File
-	// TODO files() returns recursive files
+	// TODO files() returns recursive files on s3
 	Files() ([]File, error)
 	Directory(path string) Directory
 	Filesystem() Filesystem
 	GetPath() string
+	// TODO Delete() error
+	// TODO Create() error
 	// TODO Directories() ([]Directory, error)
 	// TODO Stat()
 }
@@ -31,6 +33,7 @@ type File interface {
 	Directory() Directory
 	GetPath() string
 	Filesystem() Filesystem
+	// TODO io.Closer
 	io.ReadWriter
 }
 
