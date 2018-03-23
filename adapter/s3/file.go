@@ -64,7 +64,7 @@ func (f *S3file) Exist() bool  {
 	return err == nil
 }
 
-func (f *S3file) Info() (adapter.FileInfo, error) {
+func (f *S3file) Stat() (adapter.FileInfo, error) {
 	info := adapter.FileInfo{}
 
 	file, err := f.Fs.Service.GetObject(f.getObjectInput())

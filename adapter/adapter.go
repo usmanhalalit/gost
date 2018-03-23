@@ -13,12 +13,13 @@ type Filesystem interface {
 
 type Directory interface {
 	File(path string) File
+	// TODO files() returns recursive files
 	Files() ([]File, error)
 	Directory(path string) Directory
 	Filesystem() Filesystem
 	GetPath() string
-	//Directories() ([]Directory, error)
-	//Info()
+	// TODO Directories() ([]Directory, error)
+	// TODO Stat()
 }
 
 type File interface {
@@ -26,13 +27,14 @@ type File interface {
 	WriteString(text string) error
 	Delete() error
 	Exist() bool
-	Info() (FileInfo, error)
+	Stat() (FileInfo, error)
 	Directory() Directory
 	GetPath() string
 	Filesystem() Filesystem
 	io.ReadWriter
 }
 
+// TODO make it Go os.fileinfo compatible
 type FileInfo struct {
 	Size int64
 	LastModified time.Time
