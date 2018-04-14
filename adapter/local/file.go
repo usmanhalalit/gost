@@ -85,3 +85,7 @@ func (f *File) Write(p []byte) (n int, err error) {
 	n, err = file.Write(p)
 	return n, err
 }
+
+func (f *File) String() string {
+	return f.GetPath()
+}

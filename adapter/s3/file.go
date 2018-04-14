@@ -114,3 +114,7 @@ func (f *S3file) getObjectInput() *s3.GetObjectInput {
 	}
 }
 
+func (f *S3file) String() string {
+	return f.GetPath()
+}
+

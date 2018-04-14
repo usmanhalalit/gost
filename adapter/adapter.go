@@ -1,6 +1,7 @@
 package adapter
 
 import (
+	"fmt"
 	"io"
 	"time"
 )
@@ -13,14 +14,14 @@ type Filesystem interface {
 
 type Directory interface {
 	File(path string) File
-	// TODO files() returns recursive files on s3
 	Files() ([]File, error)
 	Directory(path string) Directory
 	Filesystem() Filesystem
 	GetPath() string
+	fmt.Stringer
 	// TODO Delete() error
 	// TODO Create() error
-	// TODO Directories() ([]Directory, error)
+	 Directories() ([]Directory, error)
 	// TODO Stat()
 }
 
@@ -32,6 +33,7 @@ type File interface {
 	Stat() (FileInfo, error)
 	Directory() Directory
 	GetPath() string
+	fmt.Stringer
 	Filesystem() Filesystem
 	// TODO io.Closer
 	io.ReadWriter

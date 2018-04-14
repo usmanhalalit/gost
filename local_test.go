@@ -18,6 +18,11 @@ func TestFiles(t *testing.T) {
 	log.Println(files[1].GetPath())
 }
 
+func TestDirectories(t *testing.T) {
+	dirs, _ := lfs.Directories()
+	log.Println(dirs[0].GetPath())
+}
+
 func TestWrite(t *testing.T) {
 	b := []byte("abc")
 	n, err := lfs.File("test.txt").Write(b)

@@ -3,27 +3,55 @@ package gost
 import (
 	"github.com/usmanhalalit/gost/adapter/s3"
 	"io/ioutil"
+	"log"
 	"os"
 	"testing"
 	"time"
 )
 
-var s3fs = New()
+var s3fs = s3.NewS3Adapter(s3.S3config{
+	Id: "AKIAJBRFB4PEZIKTETJQ",
+	Secret: "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",
+	Region: "us-east-1",
+	Bucket: "usman-gost",
+})
 
 func Test_New(t *testing.T) {
-	files, err := s3fs.Directory("aDir").Files()
+	err := s3fs.File("test.txt").WriteString("abc")
+	if err != nil {
+		t.Errorf("Failed write: %v", err)
+	}
+}
+
+func Test_Write_In_Sub_Dir(t *testing.T) {
+	err := s3fs.File("aDir/aDirSub/subsub.txt").WriteString("abc")
+	if err != nil {
+		t.Errorf("Failed write: %v", err)
+	}
+}
+
+func Test_Files(t *testing.T) {
+	files, _ := s3fs.Files()
+	log.Println(files)
+}
+
+func Test_Directories(t *testing.T) {
+	dirs, _ := s3fs.Directory("aDir").Directories()
+
+	log.Println(dirs[0].File("subsub.txt").ReadString())
+}
+
+func Test_Files_In_Dir(t *testing.T) {
+	files, err := s3fs.Directory("/").Files()
 
 	if len(files) < 1 {
-		t.Errorf("Failed listing found %v files", len(files))
+		t.Fatalf("Failed listing found %v files", len(files))
 	}
+
+	log.Println(files[0].GetPath())
 
 	if err != nil {
 		t.Errorf("Failed listing: %v", err)
-	}
-
-	err = s3fs.File("test.txt").WriteString("abc")
-	if err != nil {
-		t.Errorf("Failed write: %v", err)
 	}
 }
 
@@ -114,7 +142,7 @@ func Test_Delete(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed write: %v", err)
 	}
-	_, err = New().File("test.txt").ReadString()
+	_, err = s3fs.File("test.txt").ReadString()
 	if err == nil {
 		t.Errorf("File was not deleted in the bucket")
 	}

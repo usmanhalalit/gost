@@ -41,12 +41,39 @@ func (d *Directory) Files() ([]adapter.File, error) {
 	if err != nil { return nil, err }
 	var localFiles []adapter.File
 	for i := range files {
-		s3file := File{
-			path:   d.Path + "/" + files[i].Name(),
+		file := files[i]
+		if file.IsDir() {
+			continue
+		}
+		localFile := File{
+			path:   d.Path + "/" + file.Name(),
 			Fs:     d.Fs,
 			reader: nil,
 		}
-		localFiles = append(localFiles, adapter.File(&s3file))
+		localFiles = append(localFiles, adapter.File(&localFile))
 	}
 	return localFiles, nil
+}
+
+func (d *Directory) Directories() ([]adapter.Directory, error) {
+	files, err := ioutil.ReadDir(d.Path)
+	if err != nil { return nil, err }
+	var localDirs []adapter.Directory
+	for i := range files {
+		dir := files[i]
+		if ! dir.IsDir() {
+			continue
+		}
+
+		localDir := Directory{
+			Path:   d.Path + "/" + dir.Name(),
+			Fs:     d.Fs,
+		}
+		localDirs = append(localDirs, adapter.Directory(&localDir))
+	}
+	return localDirs, nil
+}
+
+func (d *Directory) String() string {
+	return d.GetPath()
 }
