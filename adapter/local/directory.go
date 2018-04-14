@@ -29,7 +29,7 @@ func (d *Directory) GetPath() string {
 
 func (d *Directory) Directory(path string) adapter.Directory {
 	path = d.Path + "/" + path
-	path = strings.Trim(path, "/")
+	path = strings.TrimRight(path, "/")
 	return &Directory{
 		Path: path,
 		Fs: d.Fs,

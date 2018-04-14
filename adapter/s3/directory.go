@@ -18,7 +18,7 @@ func (ad *S3directory) Filesystem() adapter.Filesystem {
 
 func (ad *S3directory) File(path string) adapter.File {
 	return &S3file{
-		Path:   path,
+		Path:   ad.Path + "/" + path,
 		Fs:     ad.Fs,
 		reader: nil,
 	}
@@ -30,7 +30,7 @@ func (ad *S3directory) GetPath() string {
 
 func (ad *S3directory) Directory(path string) adapter.Directory {
 	path = ad.Path + "/" + path
-	path = strings.Trim(path, "/")
+	path = strings.TrimRight(path, "/")
 	return &S3directory{
 		Path: path,
 		Fs: ad.Fs,
