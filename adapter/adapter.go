@@ -18,11 +18,12 @@ type Directory interface {
 	Directory(path string) Directory
 	Filesystem() Filesystem
 	GetPath() string
+	Delete() error
+	Exist() bool
+	Create() error
+	Directories() ([]Directory, error)
+	Stat() (FileInfo, error)
 	fmt.Stringer
-	// TODO Delete() error
-	// TODO Create() error
-	 Directories() ([]Directory, error)
-	// TODO Stat()
 }
 
 type File interface {
@@ -33,10 +34,9 @@ type File interface {
 	Stat() (FileInfo, error)
 	Directory() Directory
 	GetPath() string
-	fmt.Stringer
 	Filesystem() Filesystem
-	// TODO io.Closer
-	io.ReadWriter
+	io.ReadWriteCloser
+	fmt.Stringer
 }
 
 // TODO make it Go os.fileinfo compatible

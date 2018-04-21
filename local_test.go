@@ -52,9 +52,10 @@ func TestStat(t *testing.T)  {
 	}
 
 	if info.LastModified.Day() != time.Now().Day() {
-		t.Errorf("Invalid file size expected %v got %v", time.Now().Day(), info.LastModified.Day())
+		t.Errorf("Invalid file time expected %v got %v", time.Now().Day(), info.LastModified.Day())
 	}
 }
+
 
 func TestExist(t *testing.T) {
 	if ! lfs.File("test.txt").Exist() {
@@ -62,8 +63,38 @@ func TestExist(t *testing.T) {
 	}
 }
 
+
+func TestExistDir(t *testing.T) {
+	if ! lfs.Directory("aDir").Exist() {
+		t.Fatalf("Dir does not exist")
+	}
+}
+
 func TestDelete(t *testing.T) {
 	check(t, lfs.File("test.txt").Delete())
+}
+
+func TestCreateDir(t *testing.T) {
+	check(t, lfs.Directory("dDir").Create())
+}
+
+func TestStatDir(t *testing.T)  {
+	info, err := lfs.Directory("dDir").Stat()
+	if err != nil {
+		t.Errorf("Couldn't get stat: %v", err)
+	}
+
+	if info.Size != 64 {
+		t.Errorf("Invalid dir size expected %v got %v", 64, info.Size)
+	}
+
+	if info.LastModified.Day() != time.Now().Day() {
+		t.Errorf("Invalid dir time expected %v got %v", time.Now().Day(), info.LastModified.Day())
+	}
+}
+
+func TestDeleteDir(t *testing.T) {
+	check(t, lfs.Directory("dDir").Delete())
 }
 
 func TestNotExist(t *testing.T) {

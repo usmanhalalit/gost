@@ -19,8 +19,10 @@ func New(c Config) adapter.Directory {
 		Config: c,
 	}
 	return &Directory{
-		Fs: &fs,
-		Path: c.BasePath,
+		Object{
+			Fs:   &fs,
+			Path: c.BasePath,
+		},
 	}
 }
 

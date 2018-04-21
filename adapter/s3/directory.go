@@ -90,6 +90,7 @@ func (ad *S3directory) Directories() ([]adapter.Directory, error) {
 			Path: strings.Join(parts, "/"),
 			Fs:   ad.Fs,
 		}
+		// TODO may need a fix
 		addedDirs[dir] = true
 		s3Directories = append(s3Directories, adapter.Directory(&s3directory))
 	}

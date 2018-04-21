@@ -11,9 +11,8 @@ import (
 )
 
 type File struct {
-	path   string
-	Fs     *LocalFilesystem
-	reader io.Reader
+	Object
+	reader io.ReadCloser
 }
 
 func (f *File) ReadString() (string, error) {
@@ -30,38 +29,13 @@ func (f *File) WriteString(s string) error {
 	return err
 }
 
-func (f *File) Delete() error {
-	return os.Remove(f.path)
-}
-
-func (f *File) Exist() bool {
-	if _, err := os.Stat(f.path); os.IsNotExist(err) {
-		return false
-	}
-	return true
-}
-
-func (f *File) Stat() (adapter.FileInfo, error) {
-	fi, err := os.Stat(f.path)
-	if err != nil {
-		return adapter.FileInfo{}, err
-	}
-
-	return adapter.FileInfo{
-		Size: fi.Size(),
-		LastModified: fi.ModTime(),
-	}, nil
-}
-
 func (f *File) Directory() adapter.Directory {
 	return &Directory{
-		Path: filepath.Dir(f.path),
-		Fs: f.Fs,
+		Object: Object{
+			Path: filepath.Dir(f.Path),
+			Fs:   f.Fs,
+		},
 	}
-}
-
-func (f *File) GetPath() string {
-	return f.path
 }
 
 func (f *File) Filesystem() adapter.Filesystem {
@@ -70,7 +44,7 @@ func (f *File) Filesystem() adapter.Filesystem {
 
 func (f *File) Read(p []byte) (n int, err error) {
 	if f.reader == nil {
-		r, err := os.Open(f.path)
+		r, err := os.Open(f.Path)
 		if err != nil {
 			return 0, err
 		}
@@ -86,6 +60,6 @@ func (f *File) Write(p []byte) (n int, err error) {
 	return n, err
 }
 
-func (f *File) String() string {
-	return f.GetPath()
+func (f *File) Close() error {
+	return f.reader.Close()
 }

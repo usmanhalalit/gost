@@ -3,12 +3,12 @@ package local
 import (
 	"github.com/usmanhalalit/gost/adapter"
 	"io/ioutil"
+	"os"
 	"strings"
 )
 
 type Directory struct {
-	Path string
-	Fs *LocalFilesystem
+	Object
 }
 
 func (d *Directory) Filesystem() adapter.Filesystem {
@@ -17,23 +17,27 @@ func (d *Directory) Filesystem() adapter.Filesystem {
 
 func (d *Directory) File(path string) adapter.File {
 	return &File{
-		path:   d.Path + "/" + path,
-		Fs:     d.Fs,
+		Object: Object{
+			Path: d.Path + "/" + path,
+			Fs:   d.Fs,
+		},
 		reader: nil,
 	}
-}
-
-func (d *Directory) GetPath() string {
-	return d.Path
 }
 
 func (d *Directory) Directory(path string) adapter.Directory {
 	path = d.Path + "/" + path
 	path = strings.TrimRight(path, "/")
 	return &Directory{
-		Path: path,
-		Fs: d.Fs,
+		Object{
+			Path: path,
+			Fs:   d.Fs,
+		},
 	}
+}
+
+func (d *Directory) Create() error {
+	return os.Mkdir(d.Path, 644)
 }
 
 func (d *Directory) Files() ([]adapter.File, error) {
@@ -46,8 +50,10 @@ func (d *Directory) Files() ([]adapter.File, error) {
 			continue
 		}
 		localFile := File{
-			path:   d.Path + "/" + file.Name(),
-			Fs:     d.Fs,
+			Object: Object{
+				Path: d.Path + "/" + file.Name(),
+				Fs:   d.Fs,
+			},
 			reader: nil,
 		}
 		localFiles = append(localFiles, adapter.File(&localFile))
@@ -66,14 +72,12 @@ func (d *Directory) Directories() ([]adapter.Directory, error) {
 		}
 
 		localDir := Directory{
-			Path:   d.Path + "/" + dir.Name(),
-			Fs:     d.Fs,
+			Object: Object{
+				Path: d.Path + "/" + dir.Name(),
+				Fs:   d.Fs,
+			},
 		}
 		localDirs = append(localDirs, adapter.Directory(&localDir))
 	}
 	return localDirs, nil
-}
-
-func (d *Directory) String() string {
-	return d.GetPath()
 }

@@ -16,8 +16,7 @@ import (
 type S3file struct {
 	Path   string
 	Fs     *S3filesystem
-	reader io.Reader
-	writer io.WriteCloser
+	reader io.ReadCloser
 }
 
 func (f *S3file) Directory() adapter.Directory {
@@ -100,6 +99,10 @@ func (f *S3file) Read(p []byte) (n int, err error) {
 	}
 
 	return f.reader.Read(p)
+}
+
+func (f *S3file) Close() error {
+	return f.reader.Close()
 }
 
 func (f *S3file) GetSignedUrl(ttl time.Duration) (string, error) {
