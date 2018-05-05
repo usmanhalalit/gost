@@ -8,13 +8,13 @@ import (
 	"github.com/usmanhalalit/gost/adapter"
 )
 
-type S3filesystem struct {
+type Filesystem struct {
 	Service *s3.S3
-	Config S3config
+	Config  Config
 }
 
 
-type S3config struct {
+type Config struct {
 	Id string
 	Secret string
 	Token string
@@ -22,9 +22,9 @@ type S3config struct {
 	Bucket string
 }
 
-var s3Service *s3.S3
+var service *s3.S3
 
-func NewS3Adapter(c S3config) adapter.Directory {
+func New(c Config) adapter.Directory {
 	sess, _ := session.NewSession(&aws.Config{
 		Region: aws.String(c.Region),
 		Credentials: credentials.NewStaticCredentials(c.Id, c.Secret, c.Token),
@@ -32,22 +32,22 @@ func NewS3Adapter(c S3config) adapter.Directory {
 	
 
 	// Create S3 service client with a specific Region.
-	s3Service = s3.New(sess)
+	service = s3.New(sess)
 
-	fs := S3filesystem{
-		Service: s3Service,
-		Config: c,
+	fs := Filesystem{
+		Service: service,
+		Config:  c,
 	}
-	return &S3directory{
+	return &Directory{
 		Fs: &fs,
 		Path: "",
 	}
 }
 
-func (ad *S3filesystem) GetClient() interface{} {
+func (ad *Filesystem) GetClient() interface{} {
 	return ad.Service
 }
 
-func (ad *S3filesystem) GetConfig() interface{} {
+func (ad *Filesystem) GetConfig() interface{} {
 	return ad.Config
 }

@@ -1,7 +1,6 @@
-package gost
+package s3
 
 import (
-	"github.com/usmanhalalit/gost/adapter/s3"
 	"io/ioutil"
 	"log"
 	"os"
@@ -9,7 +8,7 @@ import (
 	"time"
 )
 
-var s3fs = s3.NewS3Adapter(s3.S3config{
+var s3fs = New(Config{
 	Id: "AKIAJBRFB4PEZIKTETJQ",
 	Secret: "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",
 	Region: "us-east-1",
@@ -57,8 +56,7 @@ func Test_Files_In_Dir(t *testing.T) {
 
 func Test_Write(t *testing.T) {
 	f := s3fs.File("firas.jpg")
-	//n, err := fmt.Fprintf(f, "A formatted \na\na %v", "string")
-	firas, err := os.Open("storage/firas.jpg")
+	firas, err := os.Open("../../storage/firas.jpg")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -82,7 +80,7 @@ func Test_Write(t *testing.T) {
 
 
 func Test_Read(t *testing.T) {
-	f := s3fs.File("firas.jpg").(*s3.S3file)
+	f := s3fs.File("firas.jpg")
 
 	//r, err := f.ReadShit()
 	firasB, err := ioutil.ReadAll(f)
@@ -90,7 +88,7 @@ func Test_Read(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	firas, err := os.Create("storage/firas_downloaded.jpg")
+	firas, err := os.Create("../../storage/firas_downloaded.jpg")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -110,7 +108,7 @@ func Test_GetString(t *testing.T) {
 
 func Test_GetSignedUrl(t *testing.T) {
 	f := s3fs.File("test.txt")
-	_, err := f.(*s3.S3file).GetSignedUrl(time.Minute * 1)
+	_, err := f.(*File).GetSignedUrl(time.Minute * 1)
 	if err != nil {
 		t.Errorf("Failed write: %v", err)
 	}

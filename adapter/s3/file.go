@@ -13,33 +13,33 @@ import (
 	"time"
 )
 
-type S3file struct {
+type File struct {
 	Path   string
-	Fs     *S3filesystem
+	Fs     *Filesystem
 	reader io.ReadCloser
 }
 
-func (f *S3file) Directory() adapter.Directory {
-	return &S3directory{
+func (f *File) Directory() adapter.Directory {
+	return &Directory{
 		Path: filepath.Dir(f.GetPath()),
 		Fs: f.Fs,
 	}
 }
 
-func (f *S3file) Filesystem() adapter.Filesystem {
+func (f *File) Filesystem() adapter.Filesystem {
 	return f.Fs
 }
 
-func (f *S3file) GetPath() string {
+func (f *File) GetPath() string {
 	return f.Path
 }
 
-func (f *S3file) ReadString() (string, error) {
+func (f *File) ReadString() (string, error) {
 	b, err := ioutil.ReadAll(f)
 	return string(b), err
 }
 
-func (f *S3file) WriteString(s string) error {
+func (f *File) WriteString(s string) error {
 	b := []byte(s)
 	n, err := f.Write(b)
 	if n != len(b) {
@@ -48,7 +48,7 @@ func (f *S3file) WriteString(s string) error {
 	return err
 }
 
-func (f *S3file) Delete() error {
+func (f *File) Delete() error {
 	input := &s3.DeleteObjectInput{
 		Bucket: aws.String(f.Fs.Config.Bucket),
 		Key:    aws.String(f.Path),
@@ -58,12 +58,12 @@ func (f *S3file) Delete() error {
 	return err
 }
 
-func (f *S3file) Exist() bool  {
+func (f *File) Exist() bool  {
 	_, err := f.Fs.Service.GetObject(f.getObjectInput())
 	return err == nil
 }
 
-func (f *S3file) Stat() (adapter.FileInfo, error) {
+func (f *File) Stat() (adapter.FileInfo, error) {
 	info := adapter.FileInfo{}
 
 	file, err := f.Fs.Service.HeadObject(&s3.HeadObjectInput{
@@ -80,7 +80,7 @@ func (f *S3file) Stat() (adapter.FileInfo, error) {
 	return info, nil
 }
 
-func (f *S3file) Write(p []byte) (n int, err error) {
+func (f *File) Write(p []byte) (n int, err error) {
 	reader := bytes.NewReader(p)
 	input := &s3.PutObjectInput{
 		Body:   reader,
@@ -93,7 +93,7 @@ func (f *S3file) Write(p []byte) (n int, err error) {
 	return bytesWritten, err
 }
 
-func (f *S3file) Read(p []byte) (n int, err error) {
+func (f *File) Read(p []byte) (n int, err error) {
 	if f.reader == nil {
 		input := f.getObjectInput()
 		r, err := f.Fs.Service.GetObject(input)
@@ -104,23 +104,23 @@ func (f *S3file) Read(p []byte) (n int, err error) {
 	return f.reader.Read(p)
 }
 
-func (f *S3file) Close() error {
+func (f *File) Close() error {
 	return f.reader.Close()
 }
 
-func (f *S3file) GetSignedUrl(ttl time.Duration) (string, error) {
+func (f *File) GetSignedUrl(ttl time.Duration) (string, error) {
 	req, _ := f.Fs.Service.GetObjectRequest(f.getObjectInput())
 	return req.Presign(ttl)
 }
 
-func (f *S3file) getObjectInput() *s3.GetObjectInput {
+func (f *File) getObjectInput() *s3.GetObjectInput {
 	return &s3.GetObjectInput{
 		Bucket: aws.String(f.Fs.Config.Bucket),
 		Key:    aws.String(f.Path),
 	}
 }
 
-func (f *S3file) String() string {
+func (f *File) String() string {
 	return f.GetPath()
 }
 

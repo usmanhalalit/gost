@@ -7,56 +7,56 @@ import (
 	"strings"
 )
 
-type S3directory struct {
+type Directory struct {
 	Path string
-	Fs *S3filesystem
+	Fs *Filesystem
 }
 
-func (ad *S3directory) Filesystem() adapter.Filesystem {
-	return ad.Fs
+func (d *Directory) Filesystem() adapter.Filesystem {
+	return d.Fs
 }
 
-func (ad *S3directory) File(path string) adapter.File {
-	return &S3file{
-		Path:   ad.Path + "/" + path,
-		Fs:     ad.Fs,
+func (d *Directory) File(path string) adapter.File {
+	return &File{
+		Path:   d.Path + "/" + path,
+		Fs:     d.Fs,
 		reader: nil,
 	}
 }
 
-func (ad *S3directory) GetPath() string {
-	return ad.Path
+func (d *Directory) GetPath() string {
+	return d.Path
 }
 
-func (ad *S3directory) Directory(path string) adapter.Directory {
-	path = ad.Path + "/" + path
+func (d *Directory) Directory(path string) adapter.Directory {
+	path = d.Path + "/" + path
 	path = strings.Trim(path, "/")
-	return &S3directory{
+	return &Directory{
 		Path: path,
-		Fs: ad.Fs,
+		Fs:   d.Fs,
 	}
 }
 
-func (ad *S3directory) Files() ([]adapter.File, error) {
+func (d *Directory) Files() ([]adapter.File, error) {
 	var delimiter *string
-	if ad.Path == "" {
+	if d.Path == "" {
 		delimiter = aws.String("/")
 	} else {
-		delimiter = aws.String(ad.Path)
+		delimiter = aws.String(d.Path)
 	}
 
-	files, err := ad.Fs.Service.ListObjects(&s3.ListObjectsInput{
-		Bucket:    aws.String(ad.Fs.Config.Bucket),
-		Prefix:    aws.String(ad.Path),
+	files, err := d.Fs.Service.ListObjects(&s3.ListObjectsInput{
+		Bucket:    aws.String(d.Fs.Config.Bucket),
+		Prefix:    aws.String(d.Path),
 		Delimiter: delimiter,
 	})
 
 	if err != nil { return nil, err }
 	var s3files []adapter.File
 	for i := range files.Contents {
-		s3file := S3file{
-			Path: *files.Contents[i].Key,
-			Fs: ad.Fs,
+		s3file := File{
+			Path:   *files.Contents[i].Key,
+			Fs:     d.Fs,
 			reader: nil,
 		}
 		s3files = append(s3files, adapter.File(&s3file))
@@ -64,10 +64,10 @@ func (ad *S3directory) Files() ([]adapter.File, error) {
 	return s3files, nil
 }
 
-func (ad *S3directory) Directories() ([]adapter.Directory, error) {
-	files, err := ad.Fs.Service.ListObjects(&s3.ListObjectsInput{
-		Bucket:    aws.String(ad.Fs.Config.Bucket),
-		Prefix: aws.String(ad.Path),
+func (d *Directory) Directories() ([]adapter.Directory, error) {
+	files, err := d.Fs.Service.ListObjects(&s3.ListObjectsInput{
+		Bucket:    aws.String(d.Fs.Config.Bucket),
+		Prefix: aws.String(d.Path),
 	})
 
 	if err != nil { return nil, err }
@@ -76,8 +76,8 @@ func (ad *S3directory) Directories() ([]adapter.Directory, error) {
 
 	minNoOfSlash := 2
 
-	if ad.Path != "" {
-		slashesInPath := len(strings.Split(ad.Path, "/"))
+	if d.Path != "" {
+		slashesInPath := len(strings.Split(d.Path, "/"))
 		if slashesInPath > 0 {
 			minNoOfSlash += slashesInPath
 		}
@@ -96,9 +96,9 @@ func (ad *S3directory) Directories() ([]adapter.Directory, error) {
 		}
 
 		parts = parts[:len(parts)-1]
-		s3directory := S3directory {
+		s3directory := Directory{
 			Path: strings.Join(parts, "/"),
-			Fs:   ad.Fs,
+			Fs:   d.Fs,
 		}
 		// TODO may need a fix
 		addedDirs[dir] = true
@@ -107,42 +107,42 @@ func (ad *S3directory) Directories() ([]adapter.Directory, error) {
 	return s3Directories, nil
 }
 
-func (ad *S3directory) String() string {
-	return ad.GetPath()
+func (d *Directory) String() string {
+	return d.GetPath()
 }
 
-func (ad *S3directory) getObjectInput() *s3.GetObjectInput {
+func (d *Directory) getObjectInput() *s3.GetObjectInput {
 	return &s3.GetObjectInput{
-		Bucket: aws.String(ad.Fs.Config.Bucket),
-		Key:    aws.String(ad.Path),
+		Bucket: aws.String(d.Fs.Config.Bucket),
+		Key:    aws.String(d.Path),
 	}
 }
 
-func (ad *S3directory) Exist() bool  {
-	list, err := ad.Fs.Service.ListObjects(&s3.ListObjectsInput{
-		Bucket:    aws.String(ad.Fs.Config.Bucket),
-		Prefix:    aws.String(ad.Path + "/"),
+func (d *Directory) Exist() bool  {
+	list, err := d.Fs.Service.ListObjects(&s3.ListObjectsInput{
+		Bucket:    aws.String(d.Fs.Config.Bucket),
+		Prefix:    aws.String(d.Path + "/"),
 		MaxKeys: aws.Int64(1),
 	})
 
 	return err == nil && len(list.Contents) > 0
 }
 
-func (ad *S3directory) Create() error {
+func (d *Directory) Create() error {
 	reader := strings.NewReader("")
 	input := &s3.PutObjectInput{
 		Body:   reader,
-		Bucket: aws.String(ad.Fs.Config.Bucket),
-		Key:    aws.String(ad.Path + "/"),
+		Bucket: aws.String(d.Fs.Config.Bucket),
+		Key:    aws.String(d.Path + "/"),
 	}
-	_, err := ad.Fs.Service.PutObject(input)
+	_, err := d.Fs.Service.PutObject(input)
 	return err
 }
 
-func (ad *S3directory) Delete() error {
-	files, err := ad.Fs.Service.ListObjects(&s3.ListObjectsInput{
-		Bucket:    aws.String(ad.Fs.Config.Bucket),
-		Prefix:    aws.String(ad.Path),
+func (d *Directory) Delete() error {
+	files, err := d.Fs.Service.ListObjects(&s3.ListObjectsInput{
+		Bucket:    aws.String(d.Fs.Config.Bucket),
+		Prefix:    aws.String(d.Path),
 	})
 
 	if err != nil {
@@ -151,10 +151,10 @@ func (ad *S3directory) Delete() error {
 
 	for i := range files.Contents {
 		doi := &s3.DeleteObjectInput{
-			Bucket:    aws.String(ad.Fs.Config.Bucket),
+			Bucket:    aws.String(d.Fs.Config.Bucket),
 			Key: files.Contents[i].Key,
 		}
-		_, err = ad.Fs.Service.DeleteObject(doi)
+		_, err = d.Fs.Service.DeleteObject(doi)
 
 		if err != nil {
 			return err
@@ -164,6 +164,6 @@ func (ad *S3directory) Delete() error {
 	return nil
 }
 
-func (ad *S3directory) Stat() (adapter.FileInfo, error) {
+func (d *Directory) Stat() (adapter.FileInfo, error) {
 	panic("Stat is not available on S3 directory")
 }
