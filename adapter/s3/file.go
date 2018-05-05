@@ -66,7 +66,10 @@ func (f *S3file) Exist() bool  {
 func (f *S3file) Stat() (adapter.FileInfo, error) {
 	info := adapter.FileInfo{}
 
-	file, err := f.Fs.Service.GetObject(f.getObjectInput())
+	file, err := f.Fs.Service.HeadObject(&s3.HeadObjectInput{
+		Bucket: aws.String(f.Fs.Config.Bucket),
+		Key:    aws.String(f.Path),
+	})
 	if err != nil {
 		return info, err
 	}

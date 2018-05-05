@@ -122,14 +122,26 @@ func Test_Exist(t *testing.T)  {
 	}
 }
 
+func Test_Create_Dir(t *testing.T)  {
+	if err := s3fs.Directory("dDir").Create(); err != nil {
+		t.Errorf("Couldn't create dir")
+	}
+}
+
 func Test_Exist_Dir(t *testing.T)  {
-	if ! s3fs.Directory("aDir").Exist() {
+	if ! s3fs.Directory("dDir").Exist() {
 		t.Errorf("Dir doesn't exist")
 	}
 }
 
+func Test_Delete_Dir(t *testing.T)  {
+	if err := s3fs.Directory("dDir").Delete(); err != nil {
+		t.Errorf("Couldn't delete dir: %v", err)
+	}
+}
+
 func Test_Dir_Not_Exist(t *testing.T)  {
-	if s3fs.Directory("xDir").Exist() {
+	if s3fs.Directory("dDir").Exist() {
 		t.Errorf("Dir exists")
 	}
 }

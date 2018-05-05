@@ -128,3 +128,42 @@ func (ad *S3directory) Exist() bool  {
 	return err == nil && len(list.Contents) > 0
 }
 
+func (ad *S3directory) Create() error {
+	reader := strings.NewReader("")
+	input := &s3.PutObjectInput{
+		Body:   reader,
+		Bucket: aws.String(ad.Fs.Config.Bucket),
+		Key:    aws.String(ad.Path + "/"),
+	}
+	_, err := ad.Fs.Service.PutObject(input)
+	return err
+}
+
+func (ad *S3directory) Delete() error {
+	files, err := ad.Fs.Service.ListObjects(&s3.ListObjectsInput{
+		Bucket:    aws.String(ad.Fs.Config.Bucket),
+		Prefix:    aws.String(ad.Path),
+	})
+
+	if err != nil {
+		return err
+	}
+
+	for i := range files.Contents {
+		doi := &s3.DeleteObjectInput{
+			Bucket:    aws.String(ad.Fs.Config.Bucket),
+			Key: files.Contents[i].Key,
+		}
+		_, err = ad.Fs.Service.DeleteObject(doi)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (ad *S3directory) Stat() (adapter.FileInfo, error) {
+	panic("Stat is not available on S3 directory")
+}
