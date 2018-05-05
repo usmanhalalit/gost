@@ -37,8 +37,8 @@ func Test_Files(t *testing.T) {
 
 func Test_Directories(t *testing.T) {
 	dirs, _ := s3fs.Directory("aDir").Directories()
-
-	log.Println(dirs[0].File("subsub.txt").ReadString())
+	log.Println(dirs)
+	//dirs[0].File("subsub.txt").ReadString()
 }
 
 func Test_Files_In_Dir(t *testing.T) {
@@ -119,6 +119,18 @@ func Test_GetSignedUrl(t *testing.T) {
 func Test_Exist(t *testing.T)  {
 	if ! s3fs.File("test.txt").Exist() {
 		t.Errorf("File doesn't exist")
+	}
+}
+
+func Test_Exist_Dir(t *testing.T)  {
+	if ! s3fs.Directory("aDir").Exist() {
+		t.Errorf("Dir doesn't exist")
+	}
+}
+
+func Test_Dir_Not_Exist(t *testing.T)  {
+	if s3fs.Directory("xDir").Exist() {
+		t.Errorf("Dir exists")
 	}
 }
 

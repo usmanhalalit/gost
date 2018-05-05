@@ -18,11 +18,11 @@ type Directory interface {
 	Directory(path string) Directory
 	Filesystem() Filesystem
 	GetPath() string
-	Delete() error
+	//Delete() error
 	Exist() bool
-	Create() error
+	//Create() error
 	Directories() ([]Directory, error)
-	Stat() (FileInfo, error)
+	//Stat() (FileInfo, error)
 	fmt.Stringer
 }
 

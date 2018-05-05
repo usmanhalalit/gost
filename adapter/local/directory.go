@@ -11,10 +11,6 @@ type Directory struct {
 	Object
 }
 
-func (d *Directory) Filesystem() adapter.Filesystem {
-	return d.Fs
-}
-
 func (d *Directory) File(path string) adapter.File {
 	return &File{
 		Object: Object{

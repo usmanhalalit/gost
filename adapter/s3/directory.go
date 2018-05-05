@@ -74,12 +74,22 @@ func (ad *S3directory) Directories() ([]adapter.Directory, error) {
 	var s3Directories []adapter.Directory
 	addedDirs := make(map[string]bool)
 
+	minNoOfSlash := 2
+
+	if ad.Path != "" {
+		slashesInPath := len(strings.Split(ad.Path, "/"))
+		if slashesInPath > 0 {
+			minNoOfSlash += slashesInPath
+		}
+	}
+
 	for i := range files.Contents {
 		filename := *files.Contents[i].Key
 		parts := strings.Split(filename, "/")
-		if len(parts) < 2 {
+		if len(parts) < minNoOfSlash {
 			continue
 		}
+
 		dir := parts[0]
 		if _, ok := addedDirs[dir]; ok {
 			continue
@@ -100,3 +110,21 @@ func (ad *S3directory) Directories() ([]adapter.Directory, error) {
 func (ad *S3directory) String() string {
 	return ad.GetPath()
 }
+
+func (ad *S3directory) getObjectInput() *s3.GetObjectInput {
+	return &s3.GetObjectInput{
+		Bucket: aws.String(ad.Fs.Config.Bucket),
+		Key:    aws.String(ad.Path),
+	}
+}
+
+func (ad *S3directory) Exist() bool  {
+	list, err := ad.Fs.Service.ListObjects(&s3.ListObjectsInput{
+		Bucket:    aws.String(ad.Fs.Config.Bucket),
+		Prefix:    aws.String(ad.Path + "/"),
+		MaxKeys: aws.Int64(1),
+	})
+
+	return err == nil && len(list.Contents) > 0
+}
+

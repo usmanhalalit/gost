@@ -38,10 +38,6 @@ func (f *File) Directory() adapter.Directory {
 	}
 }
 
-func (f *File) Filesystem() adapter.Filesystem {
-	return f.Fs
-}
-
 func (f *File) Read(p []byte) (n int, err error) {
 	if f.reader == nil {
 		r, err := os.Open(f.Path)
