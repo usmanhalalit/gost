@@ -1,16 +1,13 @@
-package gost
+package local
 
 import (
-	"github.com/usmanhalalit/gost/adapter/local"
 	"log"
-	"os"
 	"testing"
 	"time"
 )
 
-var ep, _ = os.Getwd()
-var lfs = local.New(local.Config{
-	BasePath: ep + "/storage",
+var lfs = New(Config{
+	BasePath: "../../storage",
 })
 
 func TestFiles(t *testing.T) {

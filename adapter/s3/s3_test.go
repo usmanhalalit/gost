@@ -1,6 +1,10 @@
 package s3
 
 import (
+	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/stretchr/testify/mock"
+	"github.com/usmanhalalit/gost/adapter"
 	"io/ioutil"
 	"log"
 	"os"
@@ -8,12 +12,45 @@ import (
 	"time"
 )
 
-var s3fs = New(Config{
-	Id: "AKIAJBRFB4PEZIKTETJQ",
-	Secret: "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",
-	Region: "us-east-1",
-	Bucket: "usman-gost",
-})
+var s3fs adapter.Directory
+
+type mockS3 struct {
+	mock.Mock
+}
+
+type ReadWriteCloser struct {
+}
+
+func (ReadWriteCloser) Read(p []byte) (n int, err error) {
+	return 1, nil
+}
+
+func (ReadWriteCloser) Write(p []byte) (n int, err error) {
+	return 1, nil
+}
+
+func (ReadWriteCloser) Close() error {
+	return nil
+}
+
+func (m mockS3) GetObject(input *s3.GetObjectInput) (*s3.GetObjectOutput, error) {
+	args := m.Called(input)
+	return args.Get(0).(*s3.GetObjectOutput), args.Error(1)
+}
+func (mockS3) HeadObject(input *s3.HeadObjectInput) (*s3.HeadObjectOutput, error) { return nil, nil}
+func (mockS3) PutObject(input *s3.PutObjectInput) (*s3.PutObjectOutput, error) { return nil, nil}
+func (mockS3) GetObjectRequest(input *s3.GetObjectInput) (req *request.Request, output *s3.GetObjectOutput) { return nil, nil}
+func (mockS3) DeleteObject(input *s3.DeleteObjectInput) (*s3.DeleteObjectOutput, error) { return nil, nil}
+func (mockS3) ListObjects(input *s3.ListObjectsInput) (*s3.ListObjectsOutput, error) { return nil, nil}
+
+func init() {
+	s3fs = New(Config{
+		Id: "AKIAJBRFB4PEZIKTETJQ",
+		Secret: "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",
+		Region: "us-east-1",
+		Bucket: "usman-gost",
+	})
+}
 
 func Test_New(t *testing.T) {
 	err := s3fs.File("test.txt").WriteString("abc")
@@ -80,6 +117,20 @@ func Test_Write(t *testing.T) {
 
 
 func Test_Read(t *testing.T) {
+	m := new(mockS3)
+	SetService(m)
+
+	m.On("GetObject").Return(&s3.GetObjectOutput{
+		Body: new(ReadWriteCloser),
+	}, nil)
+
+	s3fs = New(Config{
+		Id: "AKIAJBRFB4PEZIKTETJQ",
+		Secret: "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",
+		Region: "us-east-1",
+		Bucket: "usman-gost",
+	})
+
 	f := s3fs.File("firas.jpg")
 
 	//r, err := f.ReadShit()
