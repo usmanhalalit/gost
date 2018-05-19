@@ -1,47 +1,20 @@
 package s3
 
 import (
-	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/stretchr/testify/mock"
+	_ "github.com/stretchr/testify/mock"
 	"github.com/usmanhalalit/gost/adapter"
+	"github.com/usmanhalalit/gost/mocks"
 	"io/ioutil"
 	"log"
 	"os"
 	"testing"
 	"time"
+	"github.com/aws/aws-sdk-go/aws"
+	"io"
 )
 
 var s3fs adapter.Directory
-
-type mockS3 struct {
-	mock.Mock
-}
-
-type ReadWriteCloser struct {
-}
-
-func (ReadWriteCloser) Read(p []byte) (n int, err error) {
-	return 1, nil
-}
-
-func (ReadWriteCloser) Write(p []byte) (n int, err error) {
-	return 1, nil
-}
-
-func (ReadWriteCloser) Close() error {
-	return nil
-}
-
-func (m mockS3) GetObject(input *s3.GetObjectInput) (*s3.GetObjectOutput, error) {
-	args := m.Called(input)
-	return args.Get(0).(*s3.GetObjectOutput), args.Error(1)
-}
-func (mockS3) HeadObject(input *s3.HeadObjectInput) (*s3.HeadObjectOutput, error) { return nil, nil}
-func (mockS3) PutObject(input *s3.PutObjectInput) (*s3.PutObjectOutput, error) { return nil, nil}
-func (mockS3) GetObjectRequest(input *s3.GetObjectInput) (req *request.Request, output *s3.GetObjectOutput) { return nil, nil}
-func (mockS3) DeleteObject(input *s3.DeleteObjectInput) (*s3.DeleteObjectOutput, error) { return nil, nil}
-func (mockS3) ListObjects(input *s3.ListObjectsInput) (*s3.ListObjectsOutput, error) { return nil, nil}
 
 func init() {
 	s3fs = New(Config{
@@ -117,17 +90,21 @@ func Test_Write(t *testing.T) {
 
 
 func Test_Read(t *testing.T) {
-	m := new(mockS3)
-	SetService(m)
+	m := mocks.S3API{}
+	rwc := mocks.ReadWriteCloser{}
 
-	m.On("GetObject").Return(&s3.GetObjectOutput{
-		Body: new(ReadWriteCloser),
+	rwc.On("Read", make([]byte, 512)).Return(512, io.EOF)
+
+	m.On("GetObject", &s3.GetObjectInput{
+		Bucket: aws.String("usman-gost"),
+		Key: aws.String("/firas.jpg"),
+	}).Return(&s3.GetObjectOutput{
+		Body: rwc,
 	}, nil)
 
+	SetService(m)
+
 	s3fs = New(Config{
-		Id: "AKIAJBRFB4PEZIKTETJQ",
-		Secret: "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",
-		Region: "us-east-1",
 		Bucket: "usman-gost",
 	})
 
@@ -139,6 +116,8 @@ func Test_Read(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	return
+	
 	firas, err := os.Create("../../storage/firas_downloaded.jpg")
 	if err != nil {
 		t.Fatal(err)

@@ -3,23 +3,14 @@ package s3
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/usmanhalalit/gost/adapter"
+	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 )
 
-type S3Service interface {
-	GetObject(input *s3.GetObjectInput) (*s3.GetObjectOutput, error)
-	HeadObject(input *s3.HeadObjectInput) (*s3.HeadObjectOutput, error)
-	PutObject(input *s3.PutObjectInput) (*s3.PutObjectOutput, error)
-	GetObjectRequest(input *s3.GetObjectInput) (req *request.Request, output *s3.GetObjectOutput)
-	DeleteObject(input *s3.DeleteObjectInput) (*s3.DeleteObjectOutput, error)
-	ListObjects(input *s3.ListObjectsInput) (*s3.ListObjectsOutput, error)
-}
-
 type Filesystem struct {
-	Service S3Service
+	Service s3iface.S3API
 	Config  Config
 }
 
@@ -32,7 +23,7 @@ type Config struct {
 	Bucket string
 }
 
-var service S3Service
+var service s3iface.S3API
 
 func New(c Config) adapter.Directory {
 	if service == nil {
@@ -61,6 +52,6 @@ func (ad *Filesystem) GetConfig() interface{} {
 	return ad.Config
 }
 
-func SetService(s S3Service) {
+func SetService(s s3iface.S3API) {
 	service = s
 }
