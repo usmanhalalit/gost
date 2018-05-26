@@ -8,9 +8,10 @@ import (
 	"github.com/usmanhalalit/gost/mocks"
 	"io"
 	"io/ioutil"
-	"log"
 	"testing"
 	"time"
+	"fmt"
+	"github.com/stretchr/testify/assert"
 )
 
 var s3fs adapter.Directory
@@ -48,9 +49,56 @@ func init() {
 
 	s3mock.On("PutObject", &s3.PutObjectInput{
 		Bucket: aws.String("fake"),
+		Key:    aws.String("/aDir/aDirSub/subsub.txt"),
+		Body: 	bytes.NewReader([]byte("test")),
+	}).Return(&s3.PutObjectOutput{}, nil)
+
+	s3mock.On("PutObject", &s3.PutObjectInput{
+		Bucket: aws.String("fake"),
 		Key:    aws.String("/test.txt"),
 		Body: 	bytes.NewReader([]byte("test")),
 	}).Return(&s3.PutObjectOutput{}, nil)
+
+	var keys []*s3.Object
+	keys = append(keys,
+		&s3.Object{
+			Key: aws.String("test.txt"),
+		},
+		&s3.Object{
+			Key: aws.String("aDir/test.txt"),
+		},
+		&s3.Object{
+			Key: aws.String("aDir/subdir/test.txt"),
+		},
+		&s3.Object{
+			Key: aws.String("bDir/subdir/test.txt"),
+		},
+	)
+
+	s3mock.On("ListObjects", &s3.ListObjectsInput{
+		Bucket: aws.String("fake"),
+		Prefix:    aws.String("aDir"),
+		Delimiter:    aws.String("aDir"),
+	}).Return(&s3.ListObjectsOutput{
+		Contents: keys,
+	}, nil)
+
+	s3mock.On("ListObjects", &s3.ListObjectsInput{
+		Bucket: aws.String("fake"),
+		Prefix:    aws.String(""),
+	}).Return(&s3.ListObjectsOutput{
+		Contents: keys,
+	}, nil)
+
+	s3mock.On("ListObjects", &s3.ListObjectsInput{
+		Bucket: aws.String("fake"),
+		Prefix:    aws.String("aDir"),
+	}).Return(&s3.ListObjectsOutput{
+		Contents: keys,
+	}, nil)
+
+
+
 }
 
 func Test_Write(t *testing.T) {
@@ -70,9 +118,7 @@ func Test_Read(t *testing.T) {
 	f := s3fs.File("test.txt")
 	b, err := ioutil.ReadAll(f)
 
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	if len(b) != 512 {
 		t.Errorf("Wrong byte size on read")
 	}
@@ -80,9 +126,7 @@ func Test_Read(t *testing.T) {
 
 func Test_GetString(t *testing.T) {
 	_, err := s3fs.File("test.txt").ReadString()
-	if err != nil {
-		t.Errorf("Failed write: %v", err)
-	}
+	assert.NoError(t, err)
 }
 
 //func Test_GetSignedUrl(t *testing.T) {
@@ -101,9 +145,7 @@ func Test_Exist(t *testing.T) {
 
 func Test_Stat(t *testing.T) {
 	info, err := s3fs.File("test.txt").Stat()
-	if err != nil {
-		t.Errorf("Couldn't get info: %v", err)
-	}
+	assert.NoError(t, err)
 
 	if info.Size != 3 {
 		t.Errorf("Invalid file size expected %v got %v", 3, info.Size)
@@ -115,13 +157,8 @@ func Test_Stat(t *testing.T) {
 }
 
 func Test_Delete(t *testing.T) {
-	//readErr = errors.New("file does not exist")
-
 	err := s3fs.File("test.txt").Delete()
-	if err != nil {
-		t.Errorf("Failed deleting: %v", err)
-	}
-	_, err = s3fs.File("test.txt").ReadString()
+	assert.NoError(t, err)
 }
 
 //func Test_NotExist(t *testing.T)  {
@@ -131,30 +168,33 @@ func Test_Delete(t *testing.T) {
 //}
 
 func Test_Write_In_Sub_Dir(t *testing.T) {
-	err := s3fs.File("aDir/aDirSub/subsub.txt").WriteString("abc")
-	if err != nil {
-		t.Errorf("Failed write: %v", err)
-	}
+	_, err := s3fs.File("aDir/aDirSub/subsub.txt").Write([]byte("test"))
+	assert.NoError(t, err)
 }
 
 func Test_Directories(t *testing.T) {
-	dirs, _ := s3fs.Directory("aDir").Directories()
-	log.Println(dirs)
-	//dirs[0].File("subsub.txt").ReadString()
+	dirs, err := s3fs.Directory("aDir").Directories()
+	dirsStr := fmt.Sprintf("%v", dirs)
+	expectedDirStr := "[aDir/subdir bDir/subdir]"
+	assert.Equal(t, expectedDirStr, dirsStr, "did not get expected directories, expected: %v got %v", expectedDirStr, dirsStr)
+	assert.NoError(t, err)
+
+	dirs, err = s3fs.Directories()
+	dirsStr = fmt.Sprintf("%v", dirs)
+	expectedDirStr = "[aDir bDir/subdir]"
+	assert.Equal(t, expectedDirStr, dirsStr, "did not get expected directories, expected: %v got %v", expectedDirStr, dirsStr)
+	assert.NoError(t, err)
 }
 
+
 func Test_Files_In_Dir(t *testing.T) {
-	files, err := s3fs.Directory("/").Files()
+	files, err := s3fs.Directory("aDir").Files()
 
-	if len(files) < 1 {
-		t.Fatalf("Failed listing found %v files", len(files))
-	}
-
-	log.Println(files[0].GetPath())
-
-	if err != nil {
-		t.Errorf("Failed listing: %v", err)
-	}
+	assert.Condition(t, func() bool {
+		return len(files) >= 1
+	}, "Failed listing")
+	assert.Equal(t, files[0].GetPath(), "test.txt")
+	assert.NoError(t, err)
 }
 
 func Test_Create_Dir(t *testing.T) {
@@ -180,4 +220,3 @@ func Test_Dir_Not_Exist(t *testing.T) {
 		t.Errorf("Dir exists")
 	}
 }
-
