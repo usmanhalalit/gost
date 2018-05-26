@@ -23,6 +23,9 @@ func init() {
 	SetService(&s3mock)
 	s3fs = New(Config{
 		Bucket: "fake",
+		Region: "eu-west-1",
+		Id: "aws_access_id",
+		Secret: "aws_secret_id",
 	})
 
 	rwc := mocks.ReadWriteCloseSeeker{}
@@ -114,7 +117,7 @@ func init() {
 
 }
 
-func Test_Write(t *testing.T) {
+func TestWrite(t *testing.T) {
 	f := s3fs.File("test.txt")
 	n, err := f.Write([]byte("test"))
 
@@ -127,7 +130,7 @@ func Test_Write(t *testing.T) {
 	}
 }
 
-func Test_Read(t *testing.T) {
+func TestRead(t *testing.T) {
 	f := s3fs.File("test.txt")
 	b, err := ioutil.ReadAll(f)
 
@@ -137,7 +140,7 @@ func Test_Read(t *testing.T) {
 	}
 }
 
-func Test_GetString(t *testing.T) {
+func TestGetString(t *testing.T) {
 	_, err := s3fs.File("test.txt").ReadString()
 	assert.NoError(t, err)
 }
@@ -150,13 +153,13 @@ func Test_GetString(t *testing.T) {
 //	}
 //}
 
-func Test_Exist(t *testing.T) {
+func TestExist(t *testing.T) {
 	if ! s3fs.File("test.txt").Exist() {
 		t.Errorf("File doesn't exist")
 	}
 }
 
-func Test_Stat(t *testing.T) {
+func TestStat(t *testing.T) {
 	info, err := s3fs.File("test.txt").Stat()
 	assert.NoError(t, err)
 
@@ -169,7 +172,7 @@ func Test_Stat(t *testing.T) {
 	}
 }
 
-func Test_Delete(t *testing.T) {
+func TestDelete(t *testing.T) {
 	err := s3fs.File("test.txt").Delete()
 	assert.NoError(t, err)
 }
@@ -180,12 +183,12 @@ func Test_Delete(t *testing.T) {
 //	}
 //}
 
-func Test_Write_In_Sub_Dir(t *testing.T) {
+func TestWriteInSubDir(t *testing.T) {
 	_, err := s3fs.File("aDir/aDirSub/subsub.txt").Write([]byte("test"))
 	assert.NoError(t, err)
 }
 
-func Test_Directories(t *testing.T) {
+func TestDirectories(t *testing.T) {
 	dirs, err := s3fs.Directory("aDir").Directories()
 	dirsStr := fmt.Sprintf("%v", dirs)
 	expectedDirStr := "[aDir/subdir bDir/subdir]"
@@ -200,7 +203,7 @@ func Test_Directories(t *testing.T) {
 }
 
 
-func Test_Files_In_Dir(t *testing.T) {
+func TestFilesInDir(t *testing.T) {
 	files, err := s3fs.Directory("aDir").Files()
 
 	assert.Condition(t, func() bool {
@@ -210,16 +213,16 @@ func Test_Files_In_Dir(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func Test_Create_Dir(t *testing.T) {
+func TestCreateDir(t *testing.T) {
 	assert.NoError(t, s3fs.Directory("fake_new_dir").Create())
 }
 
-func Test_Exist_Dir(t *testing.T) {
+func TestExistDir(t *testing.T) {
 	if ! s3fs.Directory("fake_new_dir").Exist() {
 		t.Errorf("Dir doesn't exist")
 	}
 }
 
-func Test_Delete_Dir(t *testing.T) {
+func TestDeleteDir(t *testing.T) {
 	assert.NoError(t, s3fs.Directory("fake_new_dir").Delete())
 }
