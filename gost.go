@@ -2,8 +2,9 @@ package gost
 
 import "io"
 
-type ReadWriteCloser interface {
+type ReadWriteCloseSeeker interface {
 	io.Reader
 	io.Writer
 	io.Closer
+	io.Seeker
 }
