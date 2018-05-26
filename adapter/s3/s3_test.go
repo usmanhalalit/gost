@@ -12,6 +12,7 @@ import (
 	"time"
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"strings"
 )
 
 var s3fs adapter.Directory
@@ -49,31 +50,45 @@ func init() {
 
 	s3mock.On("PutObject", &s3.PutObjectInput{
 		Bucket: aws.String("fake"),
+		Key:    aws.String("fake_new_dir/"),
+		Body:   strings.NewReader(""),
+	}).Return(&s3.PutObjectOutput{}, nil)
+
+	s3mock.On("PutObject", &s3.PutObjectInput{
+		Bucket: aws.String("fake"),
 		Key:    aws.String("/aDir/aDirSub/subsub.txt"),
-		Body: 	bytes.NewReader([]byte("test")),
+		Body:   bytes.NewReader([]byte("test")),
 	}).Return(&s3.PutObjectOutput{}, nil)
 
 	s3mock.On("PutObject", &s3.PutObjectInput{
 		Bucket: aws.String("fake"),
 		Key:    aws.String("/test.txt"),
-		Body: 	bytes.NewReader([]byte("test")),
+		Body:   bytes.NewReader([]byte("test")),
 	}).Return(&s3.PutObjectOutput{}, nil)
 
-	var keys []*s3.Object
-	keys = append(keys,
-		&s3.Object{
-			Key: aws.String("test.txt"),
+	keys := []*s3.Object{
+		{Key: aws.String("test.txt")},
+		{Key: aws.String("aDir/test.txt")},
+		{Key: aws.String("aDir/subdir/test.txt")},
+		{Key: aws.String("bDir/subdir/test.txt")},
+	}
+
+	s3mock.On("ListObjects", &s3.ListObjectsInput{
+		Bucket: aws.String("fake"),
+		Prefix:aws.String("fake_new_dir"),
+	}).Return(&s3.ListObjectsOutput{
+		Contents: []*s3.Object{
+			{Key: aws.String("/test.txt")},
 		},
-		&s3.Object{
-			Key: aws.String("aDir/test.txt"),
-		},
-		&s3.Object{
-			Key: aws.String("aDir/subdir/test.txt"),
-		},
-		&s3.Object{
-			Key: aws.String("bDir/subdir/test.txt"),
-		},
-	)
+	}, nil)
+
+	s3mock.On("ListObjects", &s3.ListObjectsInput{
+		Bucket: aws.String("fake"),
+		MaxKeys: aws.Int64(1),
+		Prefix:aws.String("fake_new_dir/"),
+	}).Return(&s3.ListObjectsOutput{
+		Contents: keys,
+	}, nil)
 
 	s3mock.On("ListObjects", &s3.ListObjectsInput{
 		Bucket: aws.String("fake"),
@@ -96,8 +111,6 @@ func init() {
 	}).Return(&s3.ListObjectsOutput{
 		Contents: keys,
 	}, nil)
-
-
 
 }
 
@@ -198,25 +211,15 @@ func Test_Files_In_Dir(t *testing.T) {
 }
 
 func Test_Create_Dir(t *testing.T) {
-	if err := s3fs.Directory("dDir").Create(); err != nil {
-		t.Errorf("Couldn't create dir")
-	}
+	assert.NoError(t, s3fs.Directory("fake_new_dir").Create())
 }
 
 func Test_Exist_Dir(t *testing.T) {
-	if ! s3fs.Directory("dDir").Exist() {
+	if ! s3fs.Directory("fake_new_dir").Exist() {
 		t.Errorf("Dir doesn't exist")
 	}
 }
 
 func Test_Delete_Dir(t *testing.T) {
-	if err := s3fs.Directory("dDir").Delete(); err != nil {
-		t.Errorf("Couldn't delete dir: %v", err)
-	}
-}
-
-func Test_Dir_Not_Exist(t *testing.T) {
-	if s3fs.Directory("dDir").Exist() {
-		t.Errorf("Dir exists")
-	}
+	assert.NoError(t, s3fs.Directory("fake_new_dir").Delete())
 }
