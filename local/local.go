@@ -1,7 +1,7 @@
 package local
 
 import (
-	"github.com/usmanhalalit/gost/adapter"
+	"github.com/usmanhalalit/gost"
 )
 
 type LocalFilesystem struct {
@@ -13,7 +13,7 @@ type Config struct {
 	BasePath string
 }
 
-func New(c Config) adapter.Directory {
+func New(c Config) gost.Directory {
 	fs := LocalFilesystem{
 		Service: nil,
 		Config: c,

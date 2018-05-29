@@ -3,7 +3,7 @@ package s3
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/usmanhalalit/gost/adapter"
+	"github.com/usmanhalalit/gost"
 	"strings"
 )
 
@@ -12,11 +12,11 @@ type Directory struct {
 	Fs *Filesystem
 }
 
-func (d *Directory) Filesystem() adapter.Filesystem {
+func (d *Directory) Filesystem() gost.Filesystem {
 	return d.Fs
 }
 
-func (d *Directory) File(path string) adapter.File {
+func (d *Directory) File(path string) gost.File {
 	return &File{
 		Path:   d.Path + "/" + path,
 		Fs:     d.Fs,
@@ -28,7 +28,7 @@ func (d *Directory) GetPath() string {
 	return d.Path
 }
 
-func (d *Directory) Directory(path string) adapter.Directory {
+func (d *Directory) Directory(path string) gost.Directory {
 	path = d.Path + "/" + path
 	path = strings.Trim(path, "/")
 	return &Directory{
@@ -37,7 +37,7 @@ func (d *Directory) Directory(path string) adapter.Directory {
 	}
 }
 
-func (d *Directory) Files() ([]adapter.File, error) {
+func (d *Directory) Files() ([]gost.File, error) {
 	var delimiter *string
 	if d.Path == "" {
 		delimiter = aws.String("/")
@@ -52,26 +52,26 @@ func (d *Directory) Files() ([]adapter.File, error) {
 	})
 
 	if err != nil { return nil, err }
-	var s3files []adapter.File
+	var s3files []gost.File
 	for i := range files.Contents {
 		s3file := File{
 			Path:   *files.Contents[i].Key,
 			Fs:     d.Fs,
 			reader: nil,
 		}
-		s3files = append(s3files, adapter.File(&s3file))
+		s3files = append(s3files, gost.File(&s3file))
 	}
 	return s3files, nil
 }
 
-func (d *Directory) Directories() ([]adapter.Directory, error) {
+func (d *Directory) Directories() ([]gost.Directory, error) {
 	files, err := d.Fs.Service.ListObjects(&s3.ListObjectsInput{
 		Bucket:    aws.String(d.Fs.Config.Bucket),
 		Prefix: aws.String(d.Path),
 	})
 
 	if err != nil { return nil, err }
-	var s3Directories []adapter.Directory
+	var s3Directories []gost.Directory
 	addedDirs := make(map[string]bool)
 
 	minNoOfSlash := 2
@@ -102,7 +102,7 @@ func (d *Directory) Directories() ([]adapter.Directory, error) {
 		}
 		// TODO may need a fix
 		addedDirs[dir] = true
-		s3Directories = append(s3Directories, adapter.Directory(&s3directory))
+		s3Directories = append(s3Directories, gost.Directory(&s3directory))
 	}
 	return s3Directories, nil
 }
@@ -164,6 +164,6 @@ func (d *Directory) Delete() error {
 	return nil
 }
 
-func (d *Directory) Stat() (adapter.FileInfo, error) {
+func (d *Directory) Stat() (gost.FileInfo, error) {
 	panic("Stat is not available on S3 directory")
 }

@@ -1,7 +1,7 @@
 package local
 
 import (
-	"github.com/usmanhalalit/gost/adapter"
+	"github.com/usmanhalalit/gost"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -11,7 +11,7 @@ type Directory struct {
 	Object
 }
 
-func (d *Directory) File(path string) adapter.File {
+func (d *Directory) File(path string) gost.File {
 	return &File{
 		Object: Object{
 			Path: d.Path + "/" + path,
@@ -21,7 +21,7 @@ func (d *Directory) File(path string) adapter.File {
 	}
 }
 
-func (d *Directory) Directory(path string) adapter.Directory {
+func (d *Directory) Directory(path string) gost.Directory {
 	path = d.Path + "/" + path
 	path = strings.TrimRight(path, "/")
 	return &Directory{
@@ -36,10 +36,10 @@ func (d *Directory) Create() error {
 	return os.Mkdir(d.Path, 644)
 }
 
-func (d *Directory) Files() ([]adapter.File, error) {
+func (d *Directory) Files() ([]gost.File, error) {
 	files, err := ioutil.ReadDir(d.Path)
 	if err != nil { return nil, err }
-	var localFiles []adapter.File
+	var localFiles []gost.File
 	for i := range files {
 		file := files[i]
 		if file.IsDir() {
@@ -52,15 +52,15 @@ func (d *Directory) Files() ([]adapter.File, error) {
 			},
 			reader: nil,
 		}
-		localFiles = append(localFiles, adapter.File(&localFile))
+		localFiles = append(localFiles, gost.File(&localFile))
 	}
 	return localFiles, nil
 }
 
-func (d *Directory) Directories() ([]adapter.Directory, error) {
+func (d *Directory) Directories() ([]gost.Directory, error) {
 	files, err := ioutil.ReadDir(d.Path)
 	if err != nil { return nil, err }
-	var localDirs []adapter.Directory
+	var localDirs []gost.Directory
 	for i := range files {
 		dir := files[i]
 		if ! dir.IsDir() {
@@ -73,7 +73,7 @@ func (d *Directory) Directories() ([]adapter.Directory, error) {
 				Fs:   d.Fs,
 			},
 		}
-		localDirs = append(localDirs, adapter.Directory(&localDir))
+		localDirs = append(localDirs, gost.Directory(&localDir))
 	}
 	return localDirs, nil
 }

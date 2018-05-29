@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/usmanhalalit/gost/adapter"
+	"github.com/usmanhalalit/gost"
 	"github.com/usmanhalalit/gost/mocks"
 	"io"
 	"io/ioutil"
@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-var s3fs adapter.Directory
+var s3fs gost.Directory
 var s3mock mocks.S3API
 
 func init() {

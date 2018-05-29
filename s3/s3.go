@@ -5,7 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/usmanhalalit/gost/adapter"
+	"github.com/usmanhalalit/gost"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 )
 
@@ -25,7 +25,7 @@ type Config struct {
 
 var service s3iface.S3API
 
-func New(c Config) adapter.Directory {
+func New(c Config) gost.Directory {
 	if service == nil {
 		sess, _ := session.NewSession(&aws.Config{
 			Region:      aws.String(c.Region),

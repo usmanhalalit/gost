@@ -1,7 +1,7 @@
 package local
 
 import (
-	"github.com/usmanhalalit/gost/adapter"
+	"github.com/usmanhalalit/gost"
 	"os"
 )
 
@@ -10,7 +10,7 @@ type Object struct {
 	Fs   *LocalFilesystem
 }
 
-func (f *Object) Filesystem() adapter.Filesystem {
+func (f *Object) Filesystem() gost.Filesystem {
 	return f.Fs
 }
 
@@ -33,13 +33,13 @@ func (f *Object) Delete() error {
 	return os.Remove(f.Path)
 }
 
-func (f *Object) Stat() (adapter.FileInfo, error) {
+func (f *Object) Stat() (gost.FileInfo, error) {
 	fi, err := os.Stat(f.Path)
 	if err != nil {
-		return adapter.FileInfo{}, err
+		return gost.FileInfo{}, err
 	}
 
-	return adapter.FileInfo{
+	return gost.FileInfo{
 		Size: fi.Size(),
 		LastModified: fi.ModTime(),
 	}, nil

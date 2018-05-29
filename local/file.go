@@ -3,7 +3,7 @@ package local
 import (
 	"errors"
 	"fmt"
-	"github.com/usmanhalalit/gost/adapter"
+	"github.com/usmanhalalit/gost"
 	"io"
 	"io/ioutil"
 	"os"
@@ -29,7 +29,7 @@ func (f *File) WriteString(s string) error {
 	return err
 }
 
-func (f *File) Directory() adapter.Directory {
+func (f *File) Directory() gost.Directory {
 	return &Directory{
 		Object: Object{
 			Path: filepath.Dir(f.Path),

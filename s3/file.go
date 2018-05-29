@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/usmanhalalit/gost/adapter"
+	"github.com/usmanhalalit/gost"
 	"io"
 	"io/ioutil"
 	"path/filepath"
@@ -19,14 +19,14 @@ type File struct {
 	reader io.ReadCloser
 }
 
-func (f *File) Directory() adapter.Directory {
+func (f *File) Directory() gost.Directory {
 	return &Directory{
 		Path: filepath.Dir(f.GetPath()),
 		Fs: f.Fs,
 	}
 }
 
-func (f *File) Filesystem() adapter.Filesystem {
+func (f *File) Filesystem() gost.Filesystem {
 	return f.Fs
 }
 
@@ -63,8 +63,8 @@ func (f *File) Exist() bool  {
 	return err == nil
 }
 
-func (f *File) Stat() (adapter.FileInfo, error) {
-	info := adapter.FileInfo{}
+func (f *File) Stat() (gost.FileInfo, error) {
+	info := gost.FileInfo{}
 
 	file, err := f.Fs.Service.HeadObject(&s3.HeadObjectInput{
 		Bucket: aws.String(f.Fs.Config.Bucket),
