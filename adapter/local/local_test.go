@@ -1,45 +1,47 @@
 package local
 
 import (
-	"log"
-	"testing"
-	"time"
+
+"github.com/stretchr/testify/assert"
+"testing"
+"time"
+
 )
 
-var lfs = New(Config{
-	BasePath: "../../storage",
+var fs = New(Config{
+	BasePath: "../../mocks/fixtures",
 })
 
 func TestFiles(t *testing.T) {
-	files, _ := lfs.Files()
-	log.Println(files[1].GetPath())
+	files, _ := fs.Files()
+	assert.Equal(t, "../../mocks/fixtures/dummy-2.txt", files[1].GetPath())
 }
 
 func TestDirectories(t *testing.T) {
-	dirs, _ := lfs.Directories()
-	log.Println(dirs[0].GetPath())
+	dirs, _ := fs.Directories()
+	assert.Equal(t, "../../mocks/fixtures/aDir", dirs[0].GetPath())
 }
 
 func TestWrite(t *testing.T) {
 	b := []byte("abc")
-	n, err := lfs.File("test.txt").Write(b)
+	n, err := fs.File("test.txt").Write(b)
 	if n != len(b) {
 		t.Fatalf("Wrote %v bytes of %v bytes", n, len(b))
 	}
-	check(t, err)
+	assert.NoError(t, err)
 }
 
 func TestRead(t *testing.T) {
 	b := make([]byte, 3)
-	n, err := lfs.File("test.txt").Read(b)
+	n, err := fs.File("test.txt").Read(b)
 	if n != len(b) {
 		t.Fatalf("Read %v bytes of %v bytes", n, len(b))
 	}
-	check(t, err)
+	assert.NoError(t, err)
 }
 
 func TestStat(t *testing.T)  {
-	info, err := lfs.File("test.txt").Stat()
+	info, err := fs.File("test.txt").Stat()
 	if err != nil {
 		t.Errorf("Couldn't get stat: %v", err)
 	}
@@ -55,28 +57,33 @@ func TestStat(t *testing.T)  {
 
 
 func TestExist(t *testing.T) {
-	if ! lfs.File("test.txt").Exist() {
+	if ! fs.File("test.txt").Exist() {
 		t.Fatalf("File does not exist")
 	}
 }
 
+func TestDelete(t *testing.T) {
+	assert.NoError(t, fs.File("test.txt").Delete())
+}
+
+func TestNotExist(t *testing.T) {
+	if fs.File("test.txt").Exist() {
+		t.Fatalf("File exist")
+	}
+}
 
 func TestExistDir(t *testing.T) {
-	if ! lfs.Directory("aDir").Exist() {
+	if ! fs.Directory("aDir").Exist() {
 		t.Fatalf("Dir does not exist")
 	}
 }
 
-func TestDelete(t *testing.T) {
-	check(t, lfs.File("test.txt").Delete())
-}
-
 func TestCreateDir(t *testing.T) {
-	check(t, lfs.Directory("dDir").Create())
+	assert.NoError(t, fs.Directory("dDir").Create())
 }
 
 func TestStatDir(t *testing.T)  {
-	info, err := lfs.Directory("dDir").Stat()
+	info, err := fs.Directory("dDir").Stat()
 	if err != nil {
 		t.Errorf("Couldn't get stat: %v", err)
 	}
@@ -91,18 +98,6 @@ func TestStatDir(t *testing.T)  {
 }
 
 func TestDeleteDir(t *testing.T) {
-	check(t, lfs.Directory("dDir").Delete())
-}
-
-func TestNotExist(t *testing.T) {
-	if lfs.File("test.txt").Exist() {
-		t.Fatalf("File exist")
-	}
-}
-
-func check(t *testing.T, err error) {
-	if err != nil {
-		t.Errorf("Error: %s", err)
-	}
+	assert.NoError(t, fs.Directory("dDir").Delete())
 }
 
