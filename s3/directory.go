@@ -53,9 +53,9 @@ func (d *Directory) Files() ([]gost.File, error) {
 
 	if err != nil { return nil, err }
 	var s3files []gost.File
-	for i := range files.Contents {
+	for _, file := range files.Contents {
 		s3file := File{
-			Path:   *files.Contents[i].Key,
+			Path:   *file.Key,
 			Fs:     d.Fs,
 			reader: nil,
 		}
@@ -83,8 +83,8 @@ func (d *Directory) Directories() ([]gost.Directory, error) {
 		}
 	}
 
-	for i := range files.Contents {
-		filename := *files.Contents[i].Key
+	for _, file := range files.Contents {
+		filename := *file.Key
 		parts := strings.Split(filename, "/")
 		if len(parts) < minNoOfSlash {
 			continue
@@ -149,10 +149,10 @@ func (d *Directory) Delete() error {
 		return err
 	}
 
-	for i := range files.Contents {
+	for _, file := range files.Contents {
 		doi := &s3.DeleteObjectInput{
 			Bucket:    aws.String(d.Fs.Config.Bucket),
-			Key: files.Contents[i].Key,
+			Key: file.Key,
 		}
 		_, err = d.Fs.Service.DeleteObject(doi)
 

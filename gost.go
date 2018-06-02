@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-
 type Filesystem interface {
 	GetClient() interface{}
 	GetConfig() interface{}
@@ -41,6 +40,6 @@ type File interface {
 
 // TODO make it Go os.fileinfo compatible
 type FileInfo struct {
-	Size int64
+	Size         int64
 	LastModified time.Time
 }

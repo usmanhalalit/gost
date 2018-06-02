@@ -40,8 +40,7 @@ func (d *Directory) Files() ([]gost.File, error) {
 	files, err := ioutil.ReadDir(d.Path)
 	if err != nil { return nil, err }
 	var localFiles []gost.File
-	for i := range files {
-		file := files[i]
+	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
@@ -61,8 +60,7 @@ func (d *Directory) Directories() ([]gost.Directory, error) {
 	files, err := ioutil.ReadDir(d.Path)
 	if err != nil { return nil, err }
 	var localDirs []gost.Directory
-	for i := range files {
-		dir := files[i]
+	for _, dir := range files {
 		if ! dir.IsDir() {
 			continue
 		}
