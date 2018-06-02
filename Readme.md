@@ -103,7 +103,11 @@ fmt.Println(stat.Size)
 fmt.Println(stat.LastModifed)
 ```
 
-You can get stat of directories too. But it's not available on S3.
+You can get stat of directories too, but it's not available on S3.
+
+```
+fs.Directory("Downloads").File("test.txt").GetPath()
+```
 
 
 ## Create and Delete
@@ -124,7 +128,11 @@ localFile = lfs.File("photo.jpg")
 b, err := ioutil.ReadAll(f)
 n, err := s3fs.File("photo.jpg").Write(b)
 ```
-
+Plans to automate this 
 
 ## Custom Adapter
+
+## Testing and Mocking
+
+## Contributions
 

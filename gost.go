@@ -34,6 +34,9 @@ type File interface {
 	Directory() Directory
 	GetPath() string
 	Filesystem() Filesystem
+	// TODO
+	//Copy() error
+	//CopyTo(d Directory) error
 	io.ReadWriteCloser
 	fmt.Stringer
 }
