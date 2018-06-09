@@ -6037,6 +6037,84 @@ func (_m S3API) RestoreObjectWithContext(_a0 aws.Context, _a1 *s3.RestoreObjectI
 	return r0, r1
 }
 
+// SelectObjectContent provides a mock function with given fields: _a0
+func (_m S3API) SelectObjectContent(_a0 *s3.SelectObjectContentInput) (*s3.SelectObjectContentOutput, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *s3.SelectObjectContentOutput
+	if rf, ok := ret.Get(0).(func(*s3.SelectObjectContentInput) *s3.SelectObjectContentOutput); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*s3.SelectObjectContentOutput)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*s3.SelectObjectContentInput) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// SelectObjectContentRequest provides a mock function with given fields: _a0
+func (_m S3API) SelectObjectContentRequest(_a0 *s3.SelectObjectContentInput) (*request.Request, *s3.SelectObjectContentOutput) {
+	ret := _m.Called(_a0)
+
+	var r0 *request.Request
+	if rf, ok := ret.Get(0).(func(*s3.SelectObjectContentInput) *request.Request); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*request.Request)
+		}
+	}
+
+	var r1 *s3.SelectObjectContentOutput
+	if rf, ok := ret.Get(1).(func(*s3.SelectObjectContentInput) *s3.SelectObjectContentOutput); ok {
+		r1 = rf(_a0)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*s3.SelectObjectContentOutput)
+		}
+	}
+
+	return r0, r1
+}
+
+// SelectObjectContentWithContext provides a mock function with given fields: _a0, _a1, _a2
+func (_m S3API) SelectObjectContentWithContext(_a0 aws.Context, _a1 *s3.SelectObjectContentInput, _a2 ...request.Option) (*s3.SelectObjectContentOutput, error) {
+	_va := make([]interface{}, len(_a2))
+	for _i := range _a2 {
+		_va[_i] = _a2[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, _a0, _a1)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	var r0 *s3.SelectObjectContentOutput
+	if rf, ok := ret.Get(0).(func(aws.Context, *s3.SelectObjectContentInput, ...request.Option) *s3.SelectObjectContentOutput); ok {
+		r0 = rf(_a0, _a1, _a2...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*s3.SelectObjectContentOutput)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(aws.Context, *s3.SelectObjectContentInput, ...request.Option) error); ok {
+		r1 = rf(_a0, _a1, _a2...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UploadPart provides a mock function with given fields: _a0
 func (_m S3API) UploadPart(_a0 *s3.UploadPartInput) (*s3.UploadPartOutput, error) {
 	ret := _m.Called(_a0)
