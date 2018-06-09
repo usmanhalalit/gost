@@ -112,25 +112,31 @@ files, err := fs.Directory("Parent").Directory("Child").Files()
 ```
 
 ```go
-dirs, err := fs.Directory("Parent").Directtory("Child").Files()
+dirs, err := fs.Directory("Parent").Directory("Child").Files()
 ```
 
 ## Listing
 
 Get all files and loop through them
 ```go
-files, err := fs.Directory("Parent").Directory("Child").Files()
+files, err := fs.Files()
 for _, file := range files {
     fmt.Println(file.ReadString())
 }
-```go
-Get all directories and loop through them
 ```
+
+Get all directories and loop through them
+```go
 dirs, err := fs.Directories()
 for _, dir := range dirs {
     files := dir.Files()
     fmt.Println(files)
 }
+```
+
+Get the directory which contains a file
+```go
+dir := fs.File("test.txt").Directory()
 ```
 
 ## Stat

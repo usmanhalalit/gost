@@ -1,0 +1,20 @@
+language: go
+sudo: false
+
+matrix:
+  include:
+    - go: 1.6
+    - go: 1.7
+    - go: 1.8
+    - go: 1.9
+    - go: 1.10.x
+    - go: tip
+  allow_failures:
+    - go: tip
+
+install:
+  - go get -t -v ./...
+
+script:
+  - diff -u <(echo -n) <(gofmt -d .)
+  - go test -v -race -cover ./...

@@ -11,13 +11,12 @@ import (
 	"time"
 )
 
-
 type Directory interface {
 	// Point to a file in directory
 	File(path string) File
 	// Get all files from the directory
 	Files() ([]File, error)
-	// Get the parent directory of this directory
+	// Point to a directory in this directory
 	Directory(path string) Directory
 	// Get the the directory path
 	GetPath() string
@@ -46,7 +45,7 @@ type File interface {
 	Exist() bool
 	// Get file metadata
 	Stat() (FileInfo, error)
-	// Get the directory which contain the file
+	// Get the directory which contains the file
 	Directory() Directory
 	// Get the file path
 	GetPath() string
