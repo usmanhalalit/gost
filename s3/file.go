@@ -120,6 +120,36 @@ func (f *File) getObjectInput() *s3.GetObjectInput {
 	}
 }
 
+func (f *File) Copy(newName string) error {
+	return f.CopyTo(f.Directory(), newName)
+}
+
+func (f *File) CopyTo(dir gost.Directory, newName ...string) error {
+	var filename string
+	if len(newName) > 0 {
+		filename = newName[0]
+	} else {
+		_, filename = filepath.Split(f.GetPath())
+	}
+
+	content, err := ioutil.ReadAll(f)
+	if err != nil {
+		return err
+	}
+
+	file := dir.File(filename)
+	defer file.Close()
+	n, err := file.Write(content)
+	if err != nil {
+		return err
+	}
+	if n != len(content) {
+		return errors.New("couldn't copy full file")
+	}
+
+	return nil
+}
+
 func (f *File) String() string {
 	return f.GetPath()
 }

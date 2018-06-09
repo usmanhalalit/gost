@@ -40,6 +40,17 @@ func TestRead(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestCopyTo(t *testing.T) {
+	dir := fs.Directory("aDir")
+	err := fs.File("test.txt").CopyTo(dir)
+	assert.NoError(t, err)
+	copiedFile := dir.File("test.txt")
+	copiedContent, err := copiedFile.ReadString()
+	assert.NoError(t, err)
+	assert.Equal(t, "abc", copiedContent)
+	copiedFile.Delete()
+}
+
 func TestStat(t *testing.T)  {
 	info, err := fs.File("test.txt").Stat()
 	if err != nil {
