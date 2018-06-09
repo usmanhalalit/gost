@@ -10,10 +10,6 @@ type Object struct {
 	Fs   *LocalFilesystem
 }
 
-func (f *Object) Filesystem() gost.Filesystem {
-	return f.Fs
-}
-
 func (f *Object) GetPath() string {
 	return f.Path
 }

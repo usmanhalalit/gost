@@ -44,14 +44,6 @@ func New(c Config) gost.Directory {
 	}
 }
 
-func (ad *Filesystem) GetClient() interface{} {
-	return ad.Service
-}
-
-func (ad *Filesystem) GetConfig() interface{} {
-	return ad.Config
-}
-
 func SetService(s s3iface.S3API) {
 	service = s
 }

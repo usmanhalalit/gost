@@ -12,10 +12,6 @@ type Directory struct {
 	Fs *Filesystem
 }
 
-func (d *Directory) Filesystem() gost.Filesystem {
-	return d.Fs
-}
-
 func (d *Directory) File(path string) gost.File {
 	return &File{
 		Path:   d.Path + "/" + path,

@@ -25,11 +25,3 @@ func New(c Config) gost.Directory {
 		},
 	}
 }
-
-func (fs *LocalFilesystem) GetClient() interface{} {
-	return fs.Service
-}
-
-func (fs *LocalFilesystem) GetConfig() interface{} {
-	return fs.Config
-}

@@ -9,7 +9,7 @@ FTP, Dropbox etc. will follow soon.
 
 Quick Example:
 
-```
+```go
 // Initialize a filesystem
 fs := gost.s3.New(Config{
 	ID: "aws-id",
@@ -46,18 +46,20 @@ err := localFile.CopyTo(s3dir)
   * [Create and Delete](#create-and-delete)
   * [Copy and Paste Between Different Sources](#copy-and-paste-between-different-sources)
   * [Custom Adapter](#custom-adapter)
+  * [API Documentation](#api-documentation)
 
 
 ## Initialize
 
-You just initialize the S3 and Local adapters differently, **everything else in the API is same**.
-
-```bash
+Get the library:
+```
 go get github.com/usmanhalalit/gost
 ``` 
 
+You just initialize the S3 and Local adapters differently, **everything else in the API is same**.
+
 ### S3
-```
+```go
 fs := gost.s3.New(gost.s3.Config{
 	ID: "aws-id",
 	Key: "aws-key",
@@ -66,33 +68,35 @@ fs := gost.s3.New(gost.s3.Config{
 ```
 
 ### Local
+```go
 fs := gost.local.New(gost.local.Config{
 	BasePath: "/home/user",
 })
+```
 
 ## Read and Write
 
 ### Read
 Simple read, suitable for small files.
 
-```
+```go
 fileContent, err := fs.File("test.txt").ReadString()
 ```
 
 Bytes read, compatible with `io.Reader`, so you can do buffered read.
-```
+```go
 b := make([]byte, 3)
 n, err := fs.File("test.txt").Read(b)
 ```
 
 ### Write
 Simple write
-```
+```go
 fs.File("test.txt").WriteString("sample content")
 ```
 
 Byte write
-```
+```go
 n, err := file.Write(bytes)
 // n == number of bytes written
 ```
@@ -102,24 +106,24 @@ n, err := file.Write(bytes)
 You can explore the filesystem like you in your desktop file explorer.
 File and directories are chained in a natural way. 
 
-```
+```go
 dirs, err := fs.Directory("Parent").Directory("Child").Directories()
 files, err := fs.Directory("Parent").Directory("Child").Files()
 ```
 
-```
+```go
 dirs, err := fs.Directory("Parent").Directtory("Child").Files()
 ```
 
 ## Listing
 
 Get all files and loop through them
-```
+```go
 files, err := fs.Directory("Parent").Directory("Child").Files()
 for _, file := range files {
     fmt.Println(file.ReadString())
 }
-```
+```go
 Get all directories and loop through them
 ```
 dirs, err := fs.Directories()
@@ -133,7 +137,7 @@ for _, dir := range dirs {
 
 Get file size and last modified timestamp:
 
-```
+```go
 stat, _ := fs.File("test.txt").Stat()
 fmt.Println(stat.Size)
 fmt.Println(stat.LastModifed)
@@ -141,26 +145,26 @@ fmt.Println(stat.LastModifed)
 
 You can get stat of directories too, but it's not available on S3.
 
-```
+```go
 fs.Directory("Downloads").File("test.txt").GetPath()
 ```
 
 
 ## Create and Delete
 Delete a file and directory:
-```
+```go
 fs.File("test.txt").Delete()
 // Delete an entrie directory, beware please!
 fs.Directory("Images").Delete()
 ```
 
 Create a new directory:
-```
+```go
 fs.Directory("Images").Create()
 ```
 
 To create a new file simply write something to it:
-```
+```go
 fs.File("non_existant_file").WriteString("")
 ```  
 
@@ -168,7 +172,7 @@ fs.File("non_existant_file").WriteString("")
 
 You can copy a file to any Directory, be it in in the same filesystem or not(local or S3)
 
-```
+```go
 localFile := lfs.File("photo.jpg")
 s3Dir := s3fs.Directory("photos")
 err := localFile.CopyTo(s3dir)
@@ -177,12 +181,12 @@ err := localFile.CopyTo(s3dir)
 Fun, eh? 
 
 You can optionally provide a new filename too:
-```
+```go
 err := localFile.CopyTo(anotherDir, "copied_file.jpg")
 ```
 
 Also there is a helper to copy file in the same Directory:
-```
+```go
 file.Copy("copied_file.jpg")
 ``` 
  
@@ -191,5 +195,9 @@ file.Copy("copied_file.jpg")
 
 Yes, you can write one and it'll be appreciated if you contribute back.
 . `gost.go` file has all the interfaces defined. Basically you've to implement
-`gost.File` and `gost.Directory` interfaces. Check the `local` adapter to get an idea. 
+`gost.File` and `gost.Directory` interfaces. Check the `local` adapter to get an idea.
+
+## API Documentation
+
+Please follow the Go Doc: [https://godoc.org/github.com/usmanhalalit/gost](https://godoc.org/github.com/usmanhalalit/gost) 
 

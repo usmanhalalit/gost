@@ -26,10 +26,6 @@ func (f *File) Directory() gost.Directory {
 	}
 }
 
-func (f *File) Filesystem() gost.Filesystem {
-	return f.Fs
-}
-
 func (f *File) GetPath() string {
 	return f.Path
 }
