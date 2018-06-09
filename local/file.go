@@ -68,8 +68,8 @@ func (f *File) CopyTo(dir gost.Directory, newName ...string) error {
 		_, filename = filepath.Split(f.GetPath())
 	}
 
-	content, err := ioutil.ReadAll(f)
 	defer f.Close()
+	content, err := ioutil.ReadAll(f)
 	if err != nil {
 		return err
 	}

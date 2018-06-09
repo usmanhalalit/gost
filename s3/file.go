@@ -132,13 +132,13 @@ func (f *File) CopyTo(dir gost.Directory, newName ...string) error {
 		_, filename = filepath.Split(f.GetPath())
 	}
 
+	defer f.Close()
 	content, err := ioutil.ReadAll(f)
 	if err != nil {
 		return err
 	}
 
 	file := dir.File(filename)
-	defer file.Close()
 	n, err := file.Write(content)
 	if err != nil {
 		return err

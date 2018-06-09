@@ -34,7 +34,6 @@ type File interface {
 	Directory() Directory
 	GetPath() string
 	Filesystem() Filesystem
-	// TODO
 	Copy(newName string) error
 	CopyTo(dir Directory, newName ...string) error
 	io.ReadWriteCloser
