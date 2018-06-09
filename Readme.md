@@ -58,7 +58,7 @@ go get github.com/usmanhalalit/gost
 
 You just initialize the S3 and Local adapters differently, **everything else in the API is same**.
 
-### S3
+#### Amazon S3
 ```go
 fs := gost.s3.New(gost.s3.Config{
 	ID: "aws-id",
@@ -67,7 +67,7 @@ fs := gost.s3.New(gost.s3.Config{
 })
 ```
 
-### Local
+#### Local
 ```go
 fs := gost.local.New(gost.local.Config{
 	BasePath: "/home/user",
@@ -76,7 +76,7 @@ fs := gost.local.New(gost.local.Config{
 
 ## Read and Write
 
-### Read
+#### Read
 Simple read, suitable for small files.
 
 ```go
@@ -89,7 +89,7 @@ b := make([]byte, 3)
 n, err := fs.File("test.txt").Read(b)
 ```
 
-### Write
+#### Write
 Simple write
 ```go
 fs.File("test.txt").WriteString("sample content")
