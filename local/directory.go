@@ -38,7 +38,9 @@ func (d *Directory) Create() error {
 
 func (d *Directory) Files() ([]gost.File, error) {
 	files, err := ioutil.ReadDir(d.Path)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	var localFiles []gost.File
 	for _, file := range files {
 		if file.IsDir() {
@@ -58,10 +60,12 @@ func (d *Directory) Files() ([]gost.File, error) {
 
 func (d *Directory) Directories() ([]gost.Directory, error) {
 	files, err := ioutil.ReadDir(d.Path)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	var localDirs []gost.Directory
 	for _, dir := range files {
-		if ! dir.IsDir() {
+		if !dir.IsDir() {
 			continue
 		}
 

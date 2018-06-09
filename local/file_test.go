@@ -1,11 +1,9 @@
 package local
 
 import (
-
-"github.com/stretchr/testify/assert"
-"testing"
-"time"
-
+	"github.com/stretchr/testify/assert"
+	"testing"
+	"time"
 )
 
 var fs = New(Config{
@@ -51,7 +49,7 @@ func TestCopyTo(t *testing.T) {
 	copiedFile.Delete()
 }
 
-func TestStat(t *testing.T)  {
+func TestStat(t *testing.T) {
 	info, err := fs.File("test.txt").Stat()
 	if err != nil {
 		t.Errorf("Couldn't get stat: %v", err)
@@ -66,9 +64,8 @@ func TestStat(t *testing.T)  {
 	}
 }
 
-
 func TestExist(t *testing.T) {
-	if ! fs.File("test.txt").Exist() {
+	if !fs.File("test.txt").Exist() {
 		t.Fatalf("File does not exist")
 	}
 }
@@ -82,4 +79,3 @@ func TestNotExist(t *testing.T) {
 		t.Fatalf("File exist")
 	}
 }
-

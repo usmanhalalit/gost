@@ -9,7 +9,7 @@ import (
 
 type Directory struct {
 	Path string
-	Fs *Filesystem
+	Fs   *Filesystem
 }
 
 func (d *Directory) File(path string) gost.File {
@@ -47,7 +47,9 @@ func (d *Directory) Files() ([]gost.File, error) {
 		Delimiter: delimiter,
 	})
 
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	var s3files []gost.File
 	for _, file := range files.Contents {
 		s3file := File{
@@ -62,11 +64,13 @@ func (d *Directory) Files() ([]gost.File, error) {
 
 func (d *Directory) Directories() ([]gost.Directory, error) {
 	files, err := d.Fs.Service.ListObjects(&s3.ListObjectsInput{
-		Bucket:    aws.String(d.Fs.Config.Bucket),
+		Bucket: aws.String(d.Fs.Config.Bucket),
 		Prefix: aws.String(d.Path),
 	})
 
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	var s3Directories []gost.Directory
 	addedDirs := make(map[string]bool)
 
@@ -114,10 +118,10 @@ func (d *Directory) getObjectInput() *s3.GetObjectInput {
 	}
 }
 
-func (d *Directory) Exist() bool  {
+func (d *Directory) Exist() bool {
 	list, err := d.Fs.Service.ListObjects(&s3.ListObjectsInput{
-		Bucket:    aws.String(d.Fs.Config.Bucket),
-		Prefix:    aws.String(d.Path + "/"),
+		Bucket:  aws.String(d.Fs.Config.Bucket),
+		Prefix:  aws.String(d.Path + "/"),
 		MaxKeys: aws.Int64(1),
 	})
 
@@ -137,8 +141,8 @@ func (d *Directory) Create() error {
 
 func (d *Directory) Delete() error {
 	files, err := d.Fs.Service.ListObjects(&s3.ListObjectsInput{
-		Bucket:    aws.String(d.Fs.Config.Bucket),
-		Prefix:    aws.String(d.Path),
+		Bucket: aws.String(d.Fs.Config.Bucket),
+		Prefix: aws.String(d.Path),
 	})
 
 	if err != nil {
@@ -147,8 +151,8 @@ func (d *Directory) Delete() error {
 
 	for _, file := range files.Contents {
 		doi := &s3.DeleteObjectInput{
-			Bucket:    aws.String(d.Fs.Config.Bucket),
-			Key: file.Key,
+			Bucket: aws.String(d.Fs.Config.Bucket),
+			Key:    file.Key,
 		}
 		_, err = d.Fs.Service.DeleteObject(doi)
 

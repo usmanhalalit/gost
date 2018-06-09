@@ -2,17 +2,17 @@ package s3
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/stretchr/testify/assert"
 	"github.com/usmanhalalit/gost"
 	"github.com/usmanhalalit/gost/mocks"
 	"io"
 	"io/ioutil"
+	"strings"
 	"testing"
 	"time"
-	"fmt"
-	"github.com/stretchr/testify/assert"
-	"strings"
 )
 
 var s3fs gost.Directory
@@ -24,7 +24,7 @@ func init() {
 	s3fs = New(Config{
 		Bucket: "fake",
 		Region: "eu-west-1",
-		Id: "aws_access_id",
+		Id:     "aws_access_id",
 		Secret: "aws_secret_id",
 	})
 
@@ -78,7 +78,7 @@ func init() {
 
 	s3mock.On("ListObjects", &s3.ListObjectsInput{
 		Bucket: aws.String("fake"),
-		Prefix:aws.String("fake_new_dir"),
+		Prefix: aws.String("fake_new_dir"),
 	}).Return(&s3.ListObjectsOutput{
 		Contents: []*s3.Object{
 			{Key: aws.String("/test.txt")},
@@ -86,31 +86,31 @@ func init() {
 	}, nil)
 
 	s3mock.On("ListObjects", &s3.ListObjectsInput{
-		Bucket: aws.String("fake"),
+		Bucket:  aws.String("fake"),
 		MaxKeys: aws.Int64(1),
-		Prefix:aws.String("fake_new_dir/"),
+		Prefix:  aws.String("fake_new_dir/"),
 	}).Return(&s3.ListObjectsOutput{
 		Contents: keys,
 	}, nil)
 
 	s3mock.On("ListObjects", &s3.ListObjectsInput{
-		Bucket: aws.String("fake"),
+		Bucket:    aws.String("fake"),
 		Prefix:    aws.String("aDir"),
-		Delimiter:    aws.String("aDir"),
+		Delimiter: aws.String("aDir"),
 	}).Return(&s3.ListObjectsOutput{
 		Contents: keys,
 	}, nil)
 
 	s3mock.On("ListObjects", &s3.ListObjectsInput{
 		Bucket: aws.String("fake"),
-		Prefix:    aws.String(""),
+		Prefix: aws.String(""),
 	}).Return(&s3.ListObjectsOutput{
 		Contents: keys,
 	}, nil)
 
 	s3mock.On("ListObjects", &s3.ListObjectsInput{
 		Bucket: aws.String("fake"),
-		Prefix:    aws.String("aDir"),
+		Prefix: aws.String("aDir"),
 	}).Return(&s3.ListObjectsOutput{
 		Contents: keys,
 	}, nil)
@@ -154,7 +154,7 @@ func TestGetString(t *testing.T) {
 //}
 
 func TestExist(t *testing.T) {
-	if ! s3fs.File("test.txt").Exist() {
+	if !s3fs.File("test.txt").Exist() {
 		t.Errorf("File doesn't exist")
 	}
 }
@@ -202,7 +202,6 @@ func TestDirectories(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-
 func TestFilesInDir(t *testing.T) {
 	files, err := s3fs.Directory("aDir").Files()
 
@@ -218,7 +217,7 @@ func TestCreateDir(t *testing.T) {
 }
 
 func TestExistDir(t *testing.T) {
-	if ! s3fs.Directory("fake_new_dir").Exist() {
+	if !s3fs.Directory("fake_new_dir").Exist() {
 		t.Errorf("Dir doesn't exist")
 	}
 }

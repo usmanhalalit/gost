@@ -5,8 +5,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/usmanhalalit/gost"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+	"github.com/usmanhalalit/gost"
 )
 
 type Filesystem struct {
@@ -14,11 +14,10 @@ type Filesystem struct {
 	Config  Config
 }
 
-
 type Config struct {
-	Id string
+	Id     string
 	Secret string
-	Token string
+	Token  string
 	Region string
 	Bucket string
 }
@@ -39,7 +38,7 @@ func New(c Config) gost.Directory {
 		Config:  c,
 	}
 	return &Directory{
-		Fs: &fs,
+		Fs:   &fs,
 		Path: "",
 	}
 }

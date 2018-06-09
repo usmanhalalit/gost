@@ -36,7 +36,7 @@ func (f *Object) Stat() (gost.FileInfo, error) {
 	}
 
 	return gost.FileInfo{
-		Size: fi.Size(),
+		Size:         fi.Size(),
 		LastModified: fi.ModTime(),
 	}, nil
 }

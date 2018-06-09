@@ -16,7 +16,7 @@ type Config struct {
 func New(c Config) gost.Directory {
 	fs := LocalFilesystem{
 		Service: nil,
-		Config: c,
+		Config:  c,
 	}
 	return &Directory{
 		Object{
