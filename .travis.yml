@@ -14,7 +14,9 @@ matrix:
 
 install:
   - go get -t -v ./...
+  - go get github.com/mattn/goveralls
 
 script:
   - diff -u <(echo -n) <(gofmt -d .)
-  - go test -v -race ./...
+  - go test -v -covermode=count -coverprofile=coverage.out ./...
+  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
