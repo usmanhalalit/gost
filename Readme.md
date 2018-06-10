@@ -7,15 +7,13 @@ and Amazon S3 with a unified API. You can even copy-paste files from different s
 FTP, Dropbox etc. will follow soon.
 
 
-Quick Example:
+#### Quick Example
 
 ```go
+import "github.com/usmanhalalit/gost/s3"
+
 // Initialize a filesystem
-fs := gost.s3.New(Config{
-	ID: "aws-id",
-	Key: "aws-key",
-	Region: "es-west-1",
-})
+fs := s3.New(s3.Config{ your-aws-credentials })
 
 // Read
 note := fs.File("my-note.txt").ReadString()
@@ -35,11 +33,7 @@ err := localFile.CopyTo(s3dir)
 
 ### Table of Contents
   * [Initialize](#initialize)
-    + [S3](#s3)
-    + [Local](#local)
   * [Read and Write](#read-and-write)
-    + [Read](#read)
-    + [Write](#write)
   * [Traversing](#traversing)
   * [Listing](#listing)
   * [Stat](#stat)
@@ -59,8 +53,11 @@ go get github.com/usmanhalalit/gost
 You just initialize the S3 and Local adapters differently, **everything else in the API is same**.
 
 ### S3
-```go
-fs := gost.s3.New(gost.s3.Config{
+
+```
+import "github.com/usmanhalalit/gost/s3"
+
+fs := s3.New(s3.Config{
 	ID: "aws-id",
 	Key: "aws-key",
 	Region: "es-west-1",
@@ -69,7 +66,9 @@ fs := gost.s3.New(gost.s3.Config{
 
 ### Local
 ```go
-fs := gost.local.New(gost.local.Config{
+import "github.com/usmanhalalit/gost/local"
+
+fs := local.New(local.Config{
 	BasePath: "/home/user",
 })
 ```
@@ -207,3 +206,8 @@ Yes, you can write one and it'll be appreciated if you contribute back.
 
 Please follow the Go Doc: [https://godoc.org/github.com/usmanhalalit/gost](https://godoc.org/github.com/usmanhalalit/gost) 
 
+
+You can follow me on [Twitter](https://twitter.com/halalit_usman) 🙂
+
+___
+&copy; [Muhammad Usman](http://usman.it/). Licensed under MIT license.
