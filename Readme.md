@@ -1,6 +1,7 @@
 # Gost
 
 [![Build Status](https://travis-ci.org/usmanhalalit/gost.svg?branch=master)](https://travis-ci.org/usmanhalalit/gost)
+[![Go Report Card](https://goreportcard.com/badge/github.com/usmanhalalit/gost)](https://goreportcard.com/report/github.com/usmanhalalit/gost)
 
 Filesystem abstraction layer for Golang, that works with Local file system 
 and Amazon S3 with a unified API. You can even copy-paste files from different sources.

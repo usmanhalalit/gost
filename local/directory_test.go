@@ -22,8 +22,8 @@ func TestStatDir(t *testing.T) {
 		t.Errorf("Couldn't get stat: %v", err)
 	}
 
-	if info.Size != 64 {
-		t.Errorf("Invalid dir size expected %v got %v", 64, info.Size)
+	if info.Size < 1 {
+		t.Errorf("Invalid dir size expected more than 0 got %v", info.Size)
 	}
 
 	if info.LastModified.Day() != time.Now().Day() {
