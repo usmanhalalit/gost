@@ -14,9 +14,11 @@ matrix:
 
 install:
   - go get -t -v ./...
-  - go get github.com/mattn/goveralls
+  - go get github.com/go-playground/overalls
+  - go install github.com/go-playground/overalls
 
 script:
   - diff -u <(echo -n) <(gofmt -d .)
-  - go test -v -covermode=count -coverprofile=coverage.out ./...
-  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+  - go test -v -race ./...
+  - overalls -project=github.com/usmanhalalit/gost  -covermode=count
+  - $HOME/gopath/bin/goveralls -coverprofile=overalls.coverprofile -service=travis-ci -repotoken $COVERALLS_TOKEN

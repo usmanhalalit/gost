@@ -1,6 +1,7 @@
 # Gost
 
 [![Build Status](https://travis-ci.org/usmanhalalit/gost.svg?branch=master)](https://travis-ci.org/usmanhalalit/gost)
+[![Coverage Status](https://coveralls.io/repos/github/usmanhalalit/gost/badge.svg?branch=master)](https://coveralls.io/github/usmanhalalit/gost?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/usmanhalalit/gost)](https://goreportcard.com/report/github.com/usmanhalalit/gost)
 
 Filesystem abstraction layer for Golang, that works with Local file system 
