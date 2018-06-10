@@ -22,7 +22,7 @@ type File struct {
 func (f *File) Directory() gost.Directory {
 	return &Directory{
 		Path: filepath.Dir(f.GetPath()),
-		Fs: f.Fs,
+		Fs:   f.Fs,
 	}
 }
 
@@ -54,7 +54,7 @@ func (f *File) Delete() error {
 	return err
 }
 
-func (f *File) Exist() bool  {
+func (f *File) Exist() bool {
 	_, err := f.Fs.Service.GetObject(f.getObjectInput())
 	return err == nil
 }
@@ -93,7 +93,9 @@ func (f *File) Read(p []byte) (n int, err error) {
 	if f.reader == nil {
 		input := f.getObjectInput()
 		r, err := f.Fs.Service.GetObject(input)
-		if err != nil { return 0, err }
+		if err != nil {
+			return 0, err
+		}
 		f.reader = r.Body
 	}
 
@@ -149,4 +151,3 @@ func (f *File) CopyTo(dir gost.Directory, newName ...string) error {
 func (f *File) String() string {
 	return f.GetPath()
 }
-

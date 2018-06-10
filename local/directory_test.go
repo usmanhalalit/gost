@@ -1,15 +1,13 @@
 package local
 
 import (
-
-"github.com/stretchr/testify/assert"
-"testing"
-"time"
-
+	"github.com/stretchr/testify/assert"
+	"testing"
+	"time"
 )
 
 func TestExistDir(t *testing.T) {
-	if ! fs.Directory("aDir").Exist() {
+	if !fs.Directory("aDir").Exist() {
 		t.Fatalf("Dir does not exist")
 	}
 }
@@ -18,7 +16,7 @@ func TestCreateDir(t *testing.T) {
 	assert.NoError(t, fs.Directory("dDir").Create())
 }
 
-func TestStatDir(t *testing.T)  {
+func TestStatDir(t *testing.T) {
 	info, err := fs.Directory("dDir").Stat()
 	if err != nil {
 		t.Errorf("Couldn't get stat: %v", err)

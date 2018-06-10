@@ -52,7 +52,7 @@ go get github.com/usmanhalalit/gost
 
 You just initialize the S3 and Local adapters differently, **everything else in the API is same**.
 
-### S3
+#### Amazon S3
 
 ```
 import "github.com/usmanhalalit/gost/s3"
@@ -64,7 +64,7 @@ fs := s3.New(s3.Config{
 })
 ```
 
-### Local
+#### Local
 ```go
 import "github.com/usmanhalalit/gost/local"
 
@@ -75,7 +75,7 @@ fs := local.New(local.Config{
 
 ## Read and Write
 
-### Read
+#### Read
 Simple read, suitable for small files.
 
 ```go
@@ -88,7 +88,7 @@ b := make([]byte, 3)
 n, err := fs.File("test.txt").Read(b)
 ```
 
-### Write
+#### Write
 Simple write
 ```go
 fs.File("test.txt").WriteString("sample content")
