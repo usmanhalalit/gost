@@ -18,11 +18,11 @@ import "github.com/usmanhalalit/gost/s3"
 fs := s3.New(s3.Config{ your-aws-credentials })
 
 // Read
-note := fs.File("my-note.txt").ReadString()
+note, _ := fs.File("my-note.txt").ReadString()
 //Write
-fs.File("another-note.txt").WriteString("another note")
+err := fs.File("another-note.txt").WriteString("another note")
 
-// Traverese natuarally
+// Traverse naturally
 movies := fs.Directory("movies")
 files := movies.Files()
 movies.File("Pirated-movie.mp4").Delete()
@@ -147,7 +147,7 @@ Get file size and last modified timestamp:
 ```go
 stat, _ := fs.File("test.txt").Stat()
 fmt.Println(stat.Size)
-fmt.Println(stat.LastModifed)
+fmt.Println(stat.LastModified)
 ```
 
 You can get stat of directories too, but it's not available on S3.
@@ -161,7 +161,7 @@ fs.Directory("Downloads").File("test.txt").GetPath()
 Delete a file and directory:
 ```go
 fs.File("test.txt").Delete()
-// Delete an entrie directory, beware please!
+// Delete an entire directory, beware please!
 fs.Directory("Images").Delete()
 ```
 
@@ -172,7 +172,7 @@ fs.Directory("Images").Create()
 
 To create a new file simply write something to it:
 ```go
-fs.File("non_existant_file").WriteString("")
+fs.File("non_existent_file").WriteString("")
 ```  
 
 ## Copy and Paste Between Different Sources
@@ -206,10 +206,13 @@ Yes, you can write one and it'll be appreciated if you contribute back.
 
 ## API Documentation
 
-Please follow the Go Doc: [https://godoc.org/github.com/usmanhalalit/gost](https://godoc.org/github.com/usmanhalalit/gost) 
+Please follow the Go Doc: [https://godoc.org/github.com/usmanhalalit/gost](https://godoc.org/github.com/usmanhalalit/gost)
 
+Also check the `_test` files [here](https://github.com/usmanhalalit/gost/tree/master/local) to get more idea about the usage.
 
-You can follow me on [Twitter](https://twitter.com/halalit_usman) 🙂
 
 ___
+You can follow me on [Twitter](https://twitter.com/halalit_usman) 🙂
+
+
 &copy; [Muhammad Usman](http://usman.it/). Licensed under MIT license.
