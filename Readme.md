@@ -96,7 +96,7 @@ Simple write
 fs.File("test.txt").WriteString("sample content")
 ```
 
-Byte write
+Bytes write
 ```go
 n, err := file.Write(bytes)
 // n == number of bytes written

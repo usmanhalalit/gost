@@ -109,8 +109,8 @@ func setMockExpectations() {
 		Contents: keys,
 	}, nil)
 	s3mock.On("ListObjects", &s3.ListObjectsInput{
-		Bucket: aws.String("fake"),
-		Prefix: aws.String(""),
+		Bucket:    aws.String("fake"),
+		Prefix:    aws.String(""),
 		Delimiter: aws.String("/"),
 	}).Return(&s3.ListObjectsOutput{
 		Contents: keys,
