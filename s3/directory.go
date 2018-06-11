@@ -118,7 +118,7 @@ func (d *Directory) getObjectInput() *s3.GetObjectInput {
 	}
 }
 
-func (d *Directory) Exist() bool {
+func (d *Directory) Exists() bool {
 	list, err := d.Fs.Service.ListObjects(&s3.ListObjectsInput{
 		Bucket:  aws.String(d.Fs.Config.Bucket),
 		Prefix:  aws.String(d.Path + "/"),

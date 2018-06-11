@@ -154,7 +154,7 @@ func TestGetString(t *testing.T) {
 //}
 
 func TestExist(t *testing.T) {
-	if !s3fs.File("test.txt").Exist() {
+	if !s3fs.File("test.txt").Exists() {
 		t.Errorf("File doesn't exist")
 	}
 }
@@ -178,7 +178,7 @@ func TestDelete(t *testing.T) {
 }
 
 //func Test_NotExist(t *testing.T)  {
-//	if s3fs.File("test.txt").Exist() {
+//	if s3fs.File("test.txt").Exists() {
 //		t.Errorf("File does exist")
 //	}
 //}
@@ -217,7 +217,7 @@ func TestCreateDir(t *testing.T) {
 }
 
 func TestExistDir(t *testing.T) {
-	if !s3fs.Directory("fake_new_dir").Exist() {
+	if !s3fs.Directory("fake_new_dir").Exists() {
 		t.Errorf("Dir doesn't exist")
 	}
 }

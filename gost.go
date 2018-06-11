@@ -23,7 +23,7 @@ type Directory interface {
 	// Delete the entire directory, no undo
 	Delete() error
 	// Check if directory exists
-	Exist() bool
+	Exists() bool
 	// Create a directory
 	Create() error
 	// Get all directories in the directory
@@ -42,7 +42,7 @@ type File interface {
 	// Delete the file, no undo
 	Delete() error
 	// Check of file exists
-	Exist() bool
+	Exists() bool
 	// Get file metadata
 	Stat() (FileInfo, error)
 	// Get the directory which contains the file

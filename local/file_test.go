@@ -65,7 +65,7 @@ func TestStat(t *testing.T) {
 }
 
 func TestExist(t *testing.T) {
-	if !fs.File("test.txt").Exist() {
+	if !fs.File("test.txt").Exists() {
 		t.Fatalf("File does not exist")
 	}
 }
@@ -75,7 +75,7 @@ func TestDelete(t *testing.T) {
 }
 
 func TestNotExist(t *testing.T) {
-	if fs.File("test.txt").Exist() {
+	if fs.File("test.txt").Exists() {
 		t.Fatalf("File exist")
 	}
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func TestExistDir(t *testing.T) {
-	if !fs.Directory("aDir").Exist() {
+	if !fs.Directory("aDir").Exists() {
 		t.Fatalf("Dir does not exist")
 	}
 }

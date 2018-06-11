@@ -54,7 +54,7 @@ func (f *File) Delete() error {
 	return err
 }
 
-func (f *File) Exist() bool {
+func (f *File) Exists() bool {
 	_, err := f.Fs.Service.GetObject(f.getObjectInput())
 	return err == nil
 }

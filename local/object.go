@@ -18,7 +18,7 @@ func (f *Object) String() string {
 	return f.GetPath()
 }
 
-func (f *Object) Exist() bool {
+func (f *Object) Exists() bool {
 	if _, err := os.Stat(f.Path); os.IsNotExist(err) {
 		return false
 	}
