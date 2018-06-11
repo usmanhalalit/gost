@@ -33,17 +33,6 @@ s3Dir := fs.Directory("photos")
 err := localFile.CopyTo(s3dir)
 ```
 
-### Table of Contents
-  * [Initialize](#initialize)
-  * [Read and Write](#read-and-write)
-  * [Traversing](#traversing)
-  * [Listing](#listing)
-  * [Stat](#stat)
-  * [Create and Delete](#create-and-delete)
-  * [Copy and Paste Between Different Sources](#copy-and-paste-between-different-sources)
-  * [Custom Adapter](#custom-adapter)
-  * [API Documentation](#api-documentation)
-
 
 ## Initialize
 
