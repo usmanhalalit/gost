@@ -63,6 +63,7 @@ fs, err := s3.New(s3.Config{
 	ID: "aws-id",
 	Key: "aws-key",
 	Region: "es-west-1",
+	Bucket: "your-bucket",
 })
 ```
 
