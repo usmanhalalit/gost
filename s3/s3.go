@@ -1,6 +1,7 @@
 package s3
 
 import (
+	"errors"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -24,7 +25,7 @@ type Config struct {
 
 var service s3iface.S3API
 
-func New(c Config) gost.Directory {
+func New(c Config) (gost.Directory, error) {
 	if service == nil {
 		sess, _ := session.NewSession(&aws.Config{
 			Region:      aws.String(c.Region),
@@ -37,10 +38,17 @@ func New(c Config) gost.Directory {
 		Service: service,
 		Config:  c,
 	}
-	return &Directory{
+	rootDir := &Directory{
 		Fs:   &fs,
 		Path: "",
 	}
+
+	// Checking if we can read from the directory
+	if _, err := rootDir.Files(); err != nil {
+		return nil, errors.New("couldn't read from S3, credentials could be invalid")
+	}
+
+	return rootDir, nil
 }
 
 func SetService(s s3iface.S3API) {

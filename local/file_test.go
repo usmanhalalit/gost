@@ -6,9 +6,15 @@ import (
 	"time"
 )
 
-var fs = New(Config{
+var fs, err = New(Config{
 	BasePath: "../mocks/fixtures",
 })
+
+func init() {
+	if err != nil {
+		panic(err)
+	}
+}
 
 func TestFiles(t *testing.T) {
 	files, _ := fs.Files()

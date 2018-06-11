@@ -15,10 +15,10 @@ FTP, Dropbox etc. will follow soon.
 import "github.com/usmanhalalit/gost/s3"
 
 // Initialize a filesystem
-fs := s3.New(s3.Config{ your-aws-credentials })
+fs, err := s3.New(s3.Config{ your-aws-credentials })
 
 // Read
-note, _ := fs.File("my-note.txt").ReadString()
+note, err := fs.File("my-note.txt").ReadString()
 //Write
 err := fs.File("another-note.txt").WriteString("another note")
 
@@ -59,7 +59,7 @@ You just initialize the S3 and Local adapters differently, **everything else in 
 ```
 import "github.com/usmanhalalit/gost/s3"
 
-fs := s3.New(s3.Config{
+fs, err := s3.New(s3.Config{
 	ID: "aws-id",
 	Key: "aws-key",
 	Region: "es-west-1",
@@ -70,7 +70,7 @@ fs := s3.New(s3.Config{
 ```go
 import "github.com/usmanhalalit/gost/local"
 
-fs := local.New(local.Config{
+fs, err := local.New(local.Config{
 	BasePath: "/home/user",
 })
 ```

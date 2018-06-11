@@ -21,23 +21,27 @@ var s3mock mocks.S3API
 func init() {
 	s3mock = mocks.S3API{}
 	SetService(&s3mock)
-	s3fs = New(Config{
+
+	setMockExpectations()
+
+	s3fs, _ = New(Config{
 		Bucket: "fake",
 		Region: "eu-west-1",
 		Id:     "aws_access_id",
 		Secret: "aws_secret_id",
 	})
 
+}
+
+func setMockExpectations() {
 	rwc := mocks.ReadWriteCloseSeeker{}
 	rwc.On("Read", make([]byte, 512)).Return(512, io.EOF)
-
 	s3mock.On("GetObject", &s3.GetObjectInput{
 		Bucket: aws.String("fake"),
 		Key:    aws.String("/test.txt"),
 	}).Return(&s3.GetObjectOutput{
 		Body: rwc,
 	}, nil)
-
 	s3mock.On("HeadObject", &s3.HeadObjectInput{
 		Bucket: aws.String("fake"),
 		Key:    aws.String("/test.txt"),
@@ -45,37 +49,31 @@ func init() {
 		ContentLength: aws.Int64(3),
 		LastModified:  aws.Time(time.Now()),
 	}, nil)
-
 	s3mock.On("DeleteObject", &s3.DeleteObjectInput{
 		Bucket: aws.String("fake"),
 		Key:    aws.String("/test.txt"),
 	}).Return(&s3.DeleteObjectOutput{}, nil)
-
 	s3mock.On("PutObject", &s3.PutObjectInput{
 		Bucket: aws.String("fake"),
 		Key:    aws.String("fake_new_dir/"),
 		Body:   strings.NewReader(""),
 	}).Return(&s3.PutObjectOutput{}, nil)
-
 	s3mock.On("PutObject", &s3.PutObjectInput{
 		Bucket: aws.String("fake"),
 		Key:    aws.String("/aDir/aDirSub/subsub.txt"),
 		Body:   bytes.NewReader([]byte("test")),
 	}).Return(&s3.PutObjectOutput{}, nil)
-
 	s3mock.On("PutObject", &s3.PutObjectInput{
 		Bucket: aws.String("fake"),
 		Key:    aws.String("/test.txt"),
 		Body:   bytes.NewReader([]byte("test")),
 	}).Return(&s3.PutObjectOutput{}, nil)
-
 	keys := []*s3.Object{
 		{Key: aws.String("test.txt")},
 		{Key: aws.String("aDir/test.txt")},
 		{Key: aws.String("aDir/subdir/test.txt")},
 		{Key: aws.String("bDir/subdir/test.txt")},
 	}
-
 	s3mock.On("ListObjects", &s3.ListObjectsInput{
 		Bucket: aws.String("fake"),
 		Prefix: aws.String("fake_new_dir"),
@@ -84,7 +82,6 @@ func init() {
 			{Key: aws.String("/test.txt")},
 		},
 	}, nil)
-
 	s3mock.On("ListObjects", &s3.ListObjectsInput{
 		Bucket:  aws.String("fake"),
 		MaxKeys: aws.Int64(1),
@@ -92,7 +89,6 @@ func init() {
 	}).Return(&s3.ListObjectsOutput{
 		Contents: keys,
 	}, nil)
-
 	s3mock.On("ListObjects", &s3.ListObjectsInput{
 		Bucket:    aws.String("fake"),
 		Prefix:    aws.String("aDir"),
@@ -100,21 +96,25 @@ func init() {
 	}).Return(&s3.ListObjectsOutput{
 		Contents: keys,
 	}, nil)
-
 	s3mock.On("ListObjects", &s3.ListObjectsInput{
 		Bucket: aws.String("fake"),
 		Prefix: aws.String(""),
 	}).Return(&s3.ListObjectsOutput{
 		Contents: keys,
 	}, nil)
-
 	s3mock.On("ListObjects", &s3.ListObjectsInput{
 		Bucket: aws.String("fake"),
 		Prefix: aws.String("aDir"),
 	}).Return(&s3.ListObjectsOutput{
 		Contents: keys,
 	}, nil)
-
+	s3mock.On("ListObjects", &s3.ListObjectsInput{
+		Bucket: aws.String("fake"),
+		Prefix: aws.String(""),
+		Delimiter: aws.String("/"),
+	}).Return(&s3.ListObjectsOutput{
+		Contents: keys,
+	}, nil)
 }
 
 func TestWrite(t *testing.T) {
