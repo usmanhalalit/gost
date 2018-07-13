@@ -33,7 +33,7 @@ func (d *Directory) Directory(path string) gost.Directory {
 }
 
 func (d *Directory) Create() error {
-	return os.Mkdir(d.Path, 644)
+	return os.Mkdir(d.Path, os.ModePerm)
 }
 
 func (d *Directory) Files() ([]gost.File, error) {
