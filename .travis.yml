@@ -22,4 +22,4 @@ script:
   - diff -u <(echo -n) <(gofmt -d .)
   - go test -v -race ./...
   - overalls -project=github.com/usmanhalalit/gost  -covermode=count
-  - $HOME/gopath/bin/goveralls -coverprofile=overalls.coverprofile -service=travis-ci -repotoken $COVERALLS_TOKEN
+  - $HOME/gopath/bin/goveralls -coverprofile=overalls.coverprofile -service=travis-ci -repotoken=$COVERALLS_TOKEN
