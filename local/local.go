@@ -5,7 +5,7 @@ import (
 	"github.com/usmanhalalit/gost"
 )
 
-type LocalFilesystem struct {
+type filesystem struct {
 	Service interface{}
 	Config  Config
 }
@@ -15,7 +15,7 @@ type Config struct {
 }
 
 func New(c Config) (gost.Directory, error) {
-	fs := LocalFilesystem{
+	fs := filesystem{
 		Service: nil,
 		Config:  c,
 	}

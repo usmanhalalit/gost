@@ -7,7 +7,7 @@ import (
 
 type Object struct {
 	Path string
-	Fs   *LocalFilesystem
+	Fs   *filesystem
 }
 
 func (f *Object) GetPath() string {

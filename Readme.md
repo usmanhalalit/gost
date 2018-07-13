@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/usmanhalalit/gost/badge.svg?branch=master)](https://coveralls.io/github/usmanhalalit/gost?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/usmanhalalit/gost)](https://goreportcard.com/report/github.com/usmanhalalit/gost)
 
-Filesystem abstraction layer for Golang, that works with Local file system 
+Filesystem abstraction layer for Golang, that works with Local filesystem 
 and Amazon S3 with a unified API. You can even copy-paste files from different sources.
 FTP, Dropbox etc. will follow soon.
 
