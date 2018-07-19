@@ -23,16 +23,12 @@ type Config struct {
 	Bucket string
 }
 
-var service s3iface.S3API
-
 func New(c Config) (gost.Directory, error) {
-	if service == nil {
-		sess, _ := session.NewSession(&aws.Config{
-			Region:      aws.String(c.Region),
-			Credentials: credentials.NewStaticCredentials(c.Id, c.Secret, c.Token),
-		})
-		service = s3.New(sess)
-	}
+	sess, _ := session.NewSession(&aws.Config{
+		Region:      aws.String(c.Region),
+		Credentials: credentials.NewStaticCredentials(c.Id, c.Secret, c.Token),
+	})
+	service := s3.New(sess)
 
 	fs := Filesystem{
 		Service: service,
@@ -49,8 +45,4 @@ func New(c Config) (gost.Directory, error) {
 	}
 
 	return rootDir, nil
-}
-
-func SetService(s s3iface.S3API) {
-	service = s
 }
