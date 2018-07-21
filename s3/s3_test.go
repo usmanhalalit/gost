@@ -20,8 +20,6 @@ var s3mock mocks.S3API
 
 func init() {
 	s3mock = mocks.S3API{}
-	SetService(&s3mock)
-
 	setMockExpectations()
 
 	s3fs, _ = New(Config{
@@ -29,6 +27,7 @@ func init() {
 		Region: "eu-west-1",
 		Id:     "aws_access_id",
 		Secret: "aws_secret_id",
+		S3:     &s3mock,
 	})
 
 }
