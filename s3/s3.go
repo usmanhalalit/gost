@@ -34,7 +34,7 @@ func New(c Config) (gost.Directory, error) {
 			Region:      aws.String(c.Region),
 			Credentials: credentials.NewStaticCredentials(c.Id, c.Secret, c.Token),
 		})
-		c.S3 = s3.New(sess)
+		svc = s3.New(sess)
 	}
 
 	fs := Filesystem{
