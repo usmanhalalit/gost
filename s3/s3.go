@@ -16,22 +16,29 @@ type Filesystem struct {
 }
 
 type Config struct {
+	// Recommended. 
+	S3     s3iface.S3API
+	Bucket string
+	
+	// Deprecated.
 	Id     string
 	Secret string
 	Token  string
 	Region string
-	Bucket string
 }
 
 func New(c Config) (gost.Directory, error) {
-	sess, _ := session.NewSession(&aws.Config{
-		Region:      aws.String(c.Region),
-		Credentials: credentials.NewStaticCredentials(c.Id, c.Secret, c.Token),
-	})
-	service := s3.New(sess)
+	svc := c.S3
+	if svc == nil {
+		sess, _ := session.NewSession(&aws.Config{
+			Region:      aws.String(c.Region),
+			Credentials: credentials.NewStaticCredentials(c.Id, c.Secret, c.Token),
+		})
+		c.S3 = s3.New(sess)
+	}
 
 	fs := Filesystem{
-		Service: service,
+		Service: svc,
 		Config:  c,
 	}
 	rootDir := &Directory{
@@ -41,8 +48,7 @@ func New(c Config) (gost.Directory, error) {
 
 	// Checking if we can read from the directory
 	if _, err := rootDir.Files(); err != nil {
-		return nil, errors.New("couldn't read from S3, credentials could be invalid")
+		return nil, fmt.Errorf("couldn't read from S3: %s", err.Error())
 	}
-
 	return rootDir, nil
 }
