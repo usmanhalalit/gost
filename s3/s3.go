@@ -25,7 +25,12 @@ type Config struct {
 
 var globalService s3iface.S3API
 
-func New(c Config, service s3iface.S3API) (gost.Directory, error) {
+func New(c Config, services ...s3iface.S3API) (gost.Directory, error) {
+	var service s3iface.S3API
+	if len(services) > 0 {
+		service = services[0]
+	}
+
 	// service always takes priority over globalService
 	if globalService != nil && service == nil {
 		service = globalService
