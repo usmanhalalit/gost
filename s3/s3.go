@@ -23,9 +23,14 @@ type Config struct {
 	Bucket string
 }
 
-var service s3iface.S3API
+var globalService s3iface.S3API
 
-func New(c Config) (gost.Directory, error) {
+func New(c Config, service s3iface.S3API) (gost.Directory, error) {
+	// service always takes priority over globalService
+	if globalService != nil && service == nil {
+		service = globalService
+	}
+
 	if service == nil {
 		sess, _ := session.NewSession(&aws.Config{
 			Region:      aws.String(c.Region),
@@ -51,6 +56,7 @@ func New(c Config) (gost.Directory, error) {
 	return rootDir, nil
 }
 
+// Deprecated: SetService will be removed in the next major release
 func SetService(s s3iface.S3API) {
-	service = s
+	globalService = s
 }

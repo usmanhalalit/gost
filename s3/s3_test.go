@@ -29,7 +29,7 @@ func init() {
 		Region: "eu-west-1",
 		Id:     "aws_access_id",
 		Secret: "aws_secret_id",
-	})
+	}, nil)
 
 }
 
