@@ -10,6 +10,9 @@ matrix:
   allow_failures:
     - go: tip
 
+env:
+  - GO111MODULE=on
+
 install:
   - go get -t -v ./...
   - go get github.com/mattn/goveralls
